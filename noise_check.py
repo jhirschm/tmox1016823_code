@@ -29,6 +29,8 @@ for i, ch in enumerate(channels):
             print("here")
         except:
             evt = next(run.events())
+            evt = next(run.events())
+
         else:
             break
     
