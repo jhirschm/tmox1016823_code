@@ -32,10 +32,11 @@ for i, ch in enumerate(channels):
     
     # Plot on respective subplot
     axs[row, col].plot(y.astype(float)/2+float(1<<13), label="peak")
+    axs[row, col].plot(w*(1<<3), label="wave")
     
     # Set subtitle indicating both the channel and label
     axs[row, col].set_title(f'Channel {ch}, Label {labels[i]}')
-    # axs[row, col].legend()
+    axs[row, col].legend()
 
 # Adjust layout and display the plot
 plt.tight_layout()
