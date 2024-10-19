@@ -22,14 +22,15 @@ for i, ch in enumerate(channels):
     col = i % 4   # Determine column in 4x4 grid
 
     y = hsd.raw.peaks(evt)[ch][0][1][0]  # Extract the peak data
-    # while True:
-    #     try:
-    #         w = hsd.raw.waveforms(evt)[ch][0][1][0]  # Extract the waveform data
-    #         print("here")
-    #     except:
-    #         evt = next(run.events())
-    #     else:
-    #         break
+    while True:
+        print("1")
+        try:
+            w = hsd.raw.waveforms(evt)[ch][0][1][0]  # Extract the waveform data
+            print("here")
+        except:
+            evt = next(run.events())
+        else:
+            break
     
     # Plot on respective subplot
     axs[row, col].plot(y.astype(float)/2+float(1<<13), label="peak")
