@@ -27,5 +27,14 @@ hsdnames = {}
 
 for r in runnums:
     run = next(ds.runs())
-    rkey = run.r
-    print(rkey)
+    rkey = run.runnum
+   
+    port.update({rkey:{}})
+    hsds.update({rkey:{}})
+    chankeys.update({rkey:{}})
+    detslist.update({rkey:[s for s in run.detnames]})
+
+    print(port)
+    print(chankeys)
+    print(hsds)
+    print(detslist)
