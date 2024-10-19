@@ -17,7 +17,7 @@ def getCentroid(data,pct=.8):
 
 
 class Fzp:
-    def __init__(self,thresh) -> None:
+    def __init__(self,thresh, fzprange =[800, 1000]) -> None:
         self.v = []
         self.vsize = int(0)
         self.vc = []
@@ -26,6 +26,7 @@ class Fzp:
         self.fzpthresh = thresh
         self.winstart = 0
         self.winstop = 1<<11
+        self.fzprange = fzprange
         return
 
     @classmethod
@@ -52,13 +53,26 @@ class Fzp:
         self.winstart = int(low)
         self.winstop = int(high)
         return self
+    
+    def calculate_mean(self,fzpwv):
+            if self.fzprange[0] == 0 and self.fzprange[1] < fzpwv.shape[0]-1:
+                mean = np.int16(np.mean(fzpwv[self.fzprange[1]:])) # this subtracts baseline
+            elif self.fzprange[0] > 1 and self.fzprange[1] == fzpwv.shape[0]:
+                mean = np.int16(np.mean(fzpwv[:self.fzprange[0]]))
+            elif self.fzprange[0] > 1 and self.fzprange[1] < fzpwv.shape[0]-1:
+                mean = np.int16(np.mean(np.concatenate((fzpwv[:self.fzprange[0]],fzpwv[self.fzprange[1]:]))))
+            else:
+                mean = np.int16(np.mean(fzpwv))
+                print("Range of valid FZP data allegedly spans all of FZP waveform")
 
-    def test(self,fzpwv, mean_val_ind=800):
+            return mean
+    
+    def test(self,fzpwv):
         mean = np.int16(0)
         if type(fzpwv)==type(None):
             return False
         try:
-            mean = np.int16(np.mean(fzpwv[mean_val_ind:])) # this subtracts baseline
+            mean = self.calculate_mean(fzpwv)
         except:
             print('Damnit, Fzp!')
             return False
@@ -68,8 +82,8 @@ class Fzp:
                 return False
         return True
     
-    def process(self, fzpwv, mean_val_ind=800):
-        mean = np.int16(np.mean(fzpwv[mean_val_ind:])) # this subtracts baseline
+    def process(self, fzpwv):
+        mean = self.calculate_mean(fzpwv) # this subtracts baseline
         if (np.max(fzpwv)-mean)<self.fzpthresh:
             return False
         d = np.copy(fzpwv-mean*np.ones(len(fzpwv))).astype(np.int16)
