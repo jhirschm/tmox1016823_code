@@ -66,5 +66,5 @@ for r in runnums:
         #         else:
         #             port[rkey][hsdname][k].setRollOn(1<<6) 
         #             port[rkey][hsdname][k].setRollOff(1<<6)
-        else:
-            runhsd = False
+        # else:
+        #     runhsd = False
