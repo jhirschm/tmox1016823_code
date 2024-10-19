@@ -28,7 +28,7 @@ for i, ch in enumerate(channels):
         try:
             print("here")
 
-            w = hsd.raw.waveforms(evt)[ch][0][1][0]  # Extract the waveform data
+            w = hsd.raw.waveforms(evt)[ch][0]  # Extract the waveform data
         except:
             evt = next(run.events())
 
