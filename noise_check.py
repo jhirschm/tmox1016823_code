@@ -9,7 +9,7 @@ run = next(ds.runs())
 ch = 22
 evt = next(run.events())
 evt = next(run.events())
-hsd = next(run.Detector('mrco_hsd'))
+hsd = run.Detector('mrco_hsd')
 y = hsd.raw.peaks(evt)[ch][0][1][0]
 w =  hsd.raw.waveforms(evt)[ch][0][1][0]
 
