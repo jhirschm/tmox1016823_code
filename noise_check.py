@@ -25,7 +25,11 @@ channels = [0, 22, 45, 67, 90, 112, 135, 157, 180, 202, 225, 247, 270, 292, 315,
 labels = list(range(17))  # Labeled as 0 through 16
 
 # Plotting setup
-fig, axs = plt.subplots(4, 4, figsize=(12, 12))  # 4x4 grid for 16 channels
+# Determine the number of rows based on whether Fourier transforms are shown
+if show_fourier:
+    fig, axs = plt.subplots(8, 4, figsize=(12, 24))  # 8x4 grid: 4 for time-domain, 4 for power spectrum
+else:
+    fig, axs = plt.subplots(4, 4, figsize=(12, 12))  # 4x4 grid: only time-domain
 
 if show_fourier:
     for i, ch in enumerate(channels):
