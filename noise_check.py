@@ -53,15 +53,17 @@ if show_fourier:
         axs[row_time, col].set_title(f'Channel {ch}, Label {labels[i]}')
 
         # Take Fourier transforms of the peak and waveform data
-        peak_fft = np.fft.fft(y)
-        wave_fft = np.fft.fft(w)
+        peak_fft = np.power(np.fft.fft(y), int(2)).real
+        wave_fft = np.power(np.fft.fft(w), int(2)).real
 
         # Create corresponding frequency-domain plots (Fourier transform)
         row_fft = row_time + 4  # The FFT plots go in the next 4 rows
         freqs_y = np.fft.fftfreq(len(y))  # Frequency axis for FFT
         freqs_w = np.fft.fftfreq(len(w))
-        axs[row_fft, col].plot(freqs_y, np.abs(peak_fft)**2, label="FFT of peak")
-        axs[row_fft, col].plot(freqs_w, np.abs(wave_fft)**2, label="FFT of wave")
+        # axs[row_fft, col].plot(freqs_y, np.abs(peak_fft)**2, label="FFT of peak")
+        # axs[row_fft, col].plot(freqs_w, np.abs(wave_fft)**2, label="FFT of wave")
+        axs[row_fft, col].plot(np.log(peak_fft[-2:2]), label="Log FFT of peak")
+        axs[row_fft, col].plot(np.log(wave_fft[-2:2]), label="Log FFT of wave")
         axs[row_fft, col].set_title(f'FFT Channel {ch}, Label {labels[i]}')
 
     # Create a single legend for both "peak" and "wave" across all subplots
