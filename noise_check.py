@@ -24,10 +24,7 @@ for i, ch in enumerate(channels):
 
     evt = next(run.events())
     while True:
-        print("1")
         try:
-            print("here")
-
             w = hsd.raw.waveforms(evt)[ch][0]  # Extract the waveform data
         except:
             evt = next(run.events())
@@ -37,13 +34,15 @@ for i, ch in enumerate(channels):
     y = hsd.raw.peaks(evt)[ch][0][1][0]  # Extract the peak data
     # Plot on respective subplot
     axs[row, col].plot(y.astype(float)/2+float(1<<13), label="peak")
-    # axs[row, col].plot(w*(1<<3), label="wave")
+    axs[row, col].plot(w*(1<<3), label="wave")
     
     # Set subtitle indicating both the channel and label
     axs[row, col].set_title(f'Channel {ch}, Label {labels[i]}')
-    axs[row, col].legend()
 
 # Adjust layout and display the plot
+# Create a single legend for both "peak" and "wave" across all subplots
+fig.legend(['peak', 'wave'], loc='upper center', ncol=2)
+
 plt.tight_layout()
 plt.show()
 
