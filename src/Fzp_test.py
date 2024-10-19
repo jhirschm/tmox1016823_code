@@ -41,7 +41,7 @@ for r in runnums:
 
     # outnames.update({rkey:'%s/hits.%s.run_%03i.h5'%(scratchdir,expname,rkey)})
 
-    hsdslist = [s for s in detslist[rkey] if re.search('hsd',s)]
+    hsdslist = [s for s in detslist[rkey] if re.search('hsd',s) or re.search('fzp',s)]
 
     hsdnames.update({rkey:hsdslist})
 
