@@ -25,6 +25,7 @@ ds = psana.DataSource(exp=expname,run=runnums)
 detslist = {}
 hsdnames = {}
 
- for r in runnums:
+for r in runnums:
     run = next(ds.runs())
     rkey = run.r
+    print(rkey)
