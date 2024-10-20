@@ -29,7 +29,7 @@ mcp_bias = [1450,1500,1550,1600,1650,1700,1800]
 channel_max_values = np.zeros((len(runs_list),len(channels)))
 
 for i, run_num in enumerate(runs_list):
-    ds = psana.DataSource(exp=exp_name,run=run_num)
+    ds = psana.DataSource(exp=exp_name,run=str(run_num))
 
     run = next(ds.runs())
     hsd = run.Detector('mrco_hsd')
