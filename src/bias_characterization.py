@@ -45,9 +45,8 @@ for i, run_num in enumerate(runs_list):
                         channel_max_values[i,j] = max_value
                 # print(f"Max value of the waveform: {max_value}")
             
-        except Exception as e:
+        except:
             # Handle any error (like missing data) and continue to next event
-            print(f"Error processing event: {e}")
             continue
 
     print(channel_max_values)
