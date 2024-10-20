@@ -151,8 +151,9 @@ for j in range(len(channels)):
     # Plot a black dot at the interpolated bias value and the target value
     plt.scatter(bias, target_value, color='black', zorder=5)
 
-    # Add the text of the bias value on the right side of the plot
-    plt.text(1.02, target_value - (j * 50), f'Ch {chan}: Bias={bias:.2f}', transform=plt.gca().transAxes, 
+    
+    # Add the text of the bias value near the black dot (to the right and slightly above)
+    plt.text(bias + 10, target_value + 50 - (j * 100), f'Ch {chan}: Bias={bias:.2f}', 
              fontsize=9, color='black', verticalalignment='center')
 
 print(target_bias)
@@ -194,3 +195,4 @@ for j, chan in enumerate(channels):
             plt.plot(x_curve, y_curve, label=f'Fit for Channel {chan}', color=colors[j % len(colors)], linestyle=':')
         except:
             print(f"Curve fitting failed for Channel {chan}")
+    plt.show()
