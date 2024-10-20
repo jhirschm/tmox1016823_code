@@ -49,6 +49,8 @@ for r in runnums:
     hsdnames.update({rkey:hsdslist})
     piranhanames.update({rkey:piranhaschool})
 
+    print("piranhanames: ", piranhanames)
+
     # print('writing to %s'%outnames[rkey])
     for hsdname in hsdnames[rkey]:
         print(hsdname)
