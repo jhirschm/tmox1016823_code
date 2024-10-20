@@ -12,7 +12,8 @@ from Fzp import *
 
 print("Hello from Fzp_test.py")
 
-runfzp=True
+runhsd=True
+runpiranha=True
 fzps = []
 runnums = [22]
 expname = 'tmoc00123'
@@ -21,6 +22,10 @@ port = {}
 chankeys = {}
 hsds = {}
 hsdstring = {}
+
+piranhas = {}
+
+
 ds = psana.DataSource(exp=expname,run=runnums)
 detslist = {}
 hsdnames = {}
@@ -59,10 +64,14 @@ for r in runnums:
 
         print(port)
         print(chankeys)
-        # if runhsd and hsdname in detslist[rkey]:
-        #     hsds[rkey].update({hsdname:run.Detector(hsdname)})
-        #     port[rkey].update({hsdname:{}})
-        #     chankeys[rkey].update({hsdname:{}})
+        if runhsd and hsdname in detslist[rkey]:
+            hsds[rkey].update({hsdname:run.Detector(hsdname)})
+            port[rkey].update({hsdname:{}})
+            chankeys[rkey].update({hsdname:{}})
+
+            print(hsds)
+            print(port)
+            print(chankeys)
         #     for i,k in enumerate(list(hsds[rkey][hsdname].raw._seg_configs().keys())):
         #         chankeys[rkey][hsdname].update({k:k}) # this we may want to replace with the PCIe address id or the HSD serial number.
         #         #print(k,chankeys[rkey][hsdname][k])
@@ -80,7 +89,9 @@ for r in runnums:
 
     for piranhaname in piranhanames[rkey]:
         print(piranhaname)
-        # if runpiranha and piranhaname in detslist[rkey]:
-        #     piranhaschool.update({piranhaname:run.Detector(piranhaname)})
+        if runpiranha and piranhaname in detslist[rkey]:
+            piranhas.update({piranhaname:run.Detector(piranhaname)})
+
+        print(piranhas)
         # else:
         #     runpiranha = False
