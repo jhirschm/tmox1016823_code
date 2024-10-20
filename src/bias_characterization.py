@@ -40,6 +40,8 @@ labels = list(range(17))  # Labeled as 0 through 16
 runs_list = [17, 16, 15, 14 ,5,6,7,8,9, 10,11, 12,13]
 mcp_bias = [1200, 1250, 1300, 1350,1400,1450, 1500, 1550, 1600, 1650, 1700, 1750, 1800]
 
+thresh = 6100
+
 if load_path is not None:
     channel_max_values = np.load(load_path)
     print(f"NumPy array loaded from {load_path}")
@@ -60,7 +62,7 @@ else:
                 if waveforms is not None:
                     # If waveforms exist, get the maximum value
                     for j, chan in enumerate(channels):
-                        max_value = waveforms[chan][0].max()
+                        max_value = waveforms[chan][0][thresh:].max()
                         if max_value > channel_max_values[i,j]:
                             channel_max_values[i,j] = max_value
                     # print(f"Max value of the waveform: {max_value}")
@@ -75,8 +77,8 @@ else:
 print(channel_max_values)
 if load_path is None:   
     # Define file paths for saving the array and plot
-    numpy_file_path = "channel_max_values.npy"  # Save as .npy
-    plot_file_path = "channel_max_values_plot.png"  # Save as .png
+    numpy_file_path = "channel_max_values_thresh.npy"  # Save as .npy
+    plot_file_path = "channel_max_values_plot_thresh.png"  # Save as .png
 
     # Save the NumPy array
     np.save(numpy_file_path, channel_max_values)
@@ -175,8 +177,8 @@ bias_text = "\n".join([f"Ch {chan}: Bias={bias:.2f}" for chan, bias in zip(chann
 plt.figtext(0.78, 0.5, bias_text, fontsize=10, ha='left', va='center', bbox=dict(facecolor='white', edgecolor='black'))
 
 # Show the plot
-plt.savefig("channel_max_values_plot_biasLine_labeled.png")
-print("channel_max_values_plot_biasLine.png")
+plt.savefig("channel_max_values_plot_biasLine_labeled_thresh.png")
+print("channel_max_values_plot_biasLine_thresh.png")
 plt.show()
 
 
@@ -237,8 +239,8 @@ for j, chan in enumerate(channels):
 plt.tight_layout()
 
 # Save and show the plot
-plt.savefig("fitted_channel_max_values_subplots.png")
-print("Plot saved as fitted_channel_max_values_subplots.png")
+plt.savefig("fitted_channel_max_values_subplots_thresh.png")
+print("Plot saved as fitted_channel_max_values_subplots_thresh.png")
 plt.show()
 
 
@@ -262,73 +264,73 @@ canvas.get_tk_widget().pack()
 # Store the fitted parameters globally so they aren't recalculated
 fit_parameters = []
 
-# Initial plot setup: plot the data and fits
-def initial_plot_setup():
-    for j, chan in enumerate(channels):
-        y_data = channel_max_values[:, j]
-        x_data = np.array(mcp_bias)
+# # Initial plot setup: plot the data and fits
+# def initial_plot_setup():
+#     for j, chan in enumerate(channels):
+#         y_data = channel_max_values[:, j]
+#         x_data = np.array(mcp_bias)
 
-        # Filter values between 2000 and 4000
-        valid_indices = (y_data >= 2000) & (y_data <= 4000)
-        x_fit = x_data[valid_indices]
-        y_fit = y_data[valid_indices]
+#         # Filter values between 2000 and 4000
+#         valid_indices = (y_data >= 2000) & (y_data <= 4000)
+#         x_fit = x_data[valid_indices]
+#         y_fit = y_data[valid_indices]
 
-        if len(x_fit) > 0 and len(y_fit) > 0:
-            try:
-                popt, _ = curve_fit(poly3, x_fit, y_fit)
-                fit_parameters.append(popt)
+#         if len(x_fit) > 0 and len(y_fit) > 0:
+#             try:
+#                 popt, _ = curve_fit(poly3, x_fit, y_fit)
+#                 fit_parameters.append(popt)
 
-                # Generate the fitted curve
-                x_curve = np.linspace(min(x_fit), max(x_fit), 100)
-                y_curve = poly3(x_curve, *popt)
+#                 # Generate the fitted curve
+#                 x_curve = np.linspace(min(x_fit), max(x_fit), 100)
+#                 y_curve = poly3(x_curve, *popt)
 
-                # Plot the original data and the fitted curve
-                axs[j].plot(x_data, y_data, 'o', color='black', label=f'Channel {chan}')
-                axs[j].plot(x_curve, y_curve, color='red', linestyle='--', label='Fit')
+#                 # Plot the original data and the fitted curve
+#                 axs[j].plot(x_data, y_data, 'o', color='black', label=f'Channel {chan}')
+#                 axs[j].plot(x_curve, y_curve, color='red', linestyle='--', label='Fit')
 
-                # Set plot limits and titles
-                axs[j].set_xlim(1150, 1850)
-                axs[j].set_ylim(2000, 4250)
-                axs[j].set_title(f'Channel {chan} - No Max Value Set')
-                axs[j].legend()
+#                 # Set plot limits and titles
+#                 axs[j].set_xlim(1150, 1850)
+#                 axs[j].set_ylim(2000, 4250)
+#                 axs[j].set_title(f'Channel {chan} - No Max Value Set')
+#                 axs[j].legend()
 
-            except:
-                axs[j].set_title(f"Channel {chan} - Fit Failed")
+#             except:
+#                 axs[j].set_title(f"Channel {chan} - Fit Failed")
 
-    canvas.draw()
+#     canvas.draw()
 
-# Update only the markers and bias text when the max value is changed
-def update_plots():
-    max_value = float(max_value_entry.get())
+# # Update only the markers and bias text when the max value is changed
+# def update_plots():
+#     max_value = float(max_value_entry.get())
 
-    for j, chan in enumerate(channels):
-        a, b, c, d = fit_parameters[j]
+#     for j, chan in enumerate(channels):
+#         a, b, c, d = fit_parameters[j]
 
-        # Find the bias voltage for the given max_value
-        fitted_bias_voltage = np.roots([a, b, c, d - max_value])
+#         # Find the bias voltage for the given max_value
+#         fitted_bias_voltage = np.roots([a, b, c, d - max_value])
 
-        # We only want real roots, select one within the MCP bias range
-        fitted_bias_voltage = fitted_bias_voltage[np.isreal(fitted_bias_voltage)].real
-        fitted_bias_voltage = fitted_bias_voltage[(fitted_bias_voltage >= 1150) & (fitted_bias_voltage <= 1850)]
+#         # We only want real roots, select one within the MCP bias range
+#         fitted_bias_voltage = fitted_bias_voltage[np.isreal(fitted_bias_voltage)].real
+#         fitted_bias_voltage = fitted_bias_voltage[(fitted_bias_voltage >= 1150) & (fitted_bias_voltage <= 1850)]
 
-        if len(fitted_bias_voltage) > 0:
-            fitted_bias_voltage = fitted_bias_voltage[0]  # Use the first valid bias voltage
+#         if len(fitted_bias_voltage) > 0:
+#             fitted_bias_voltage = fitted_bias_voltage[0]  # Use the first valid bias voltage
 
-            # Clear previous marker and add the new marker at the max value
-            axs[j].collections.clear()  # Clear previous markers
-            axs[j].plot(fitted_bias_voltage, max_value, 'p', color='blue', markersize=10, label='Selected Point')
+#             # Clear previous marker and add the new marker at the max value
+#             axs[j].collections.clear()  # Clear previous markers
+#             axs[j].plot(fitted_bias_voltage, max_value, 'p', color='blue', markersize=10, label='Selected Point')
 
-            # Update the title with the bias voltage
-            axs[j].set_title(f'Channel {chan} - Bias {fitted_bias_voltage:.2f}')
+#             # Update the title with the bias voltage
+#             axs[j].set_title(f'Channel {chan} - Bias {fitted_bias_voltage:.2f}')
 
-    canvas.draw()
+#     canvas.draw()
 
-# Initial plot setup (run only once)
-initial_plot_setup()
+# # Initial plot setup (run only once)
+# initial_plot_setup()
 
-# Create a button to update plots
-update_button = tk.Button(root, text="Update Plots", command=update_plots)
-update_button.pack(pady=5)
+# # Create a button to update plots
+# update_button = tk.Button(root, text="Update Plots", command=update_plots)
+# update_button.pack(pady=5)
 
-# Run the tkinter main loop
-root.mainloop()
+# # Run the tkinter main loop
+# root.mainloop()
