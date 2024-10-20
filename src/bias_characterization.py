@@ -4,6 +4,8 @@ import numpy as np
 import argparse
 import itertools
 from scipy.optimize import curve_fit
+from matplotlib.widgets import TextBox
+
 
 
 # Set up argument parser to take show_fourier as a command-line argument
@@ -140,7 +142,7 @@ plt.legend(loc='best', fontsize=10)
 plt.grid(True)
 
 # Specify a target value for interpolation
-target_value = 3000  # Example target value
+target_value = 3250  # Example target value
 target_bias = []
 
 for j in range(len(channels)):
@@ -194,6 +196,8 @@ for j, chan in enumerate(channels):
     x_fit = x_data[valid_indices]
     y_fit = y_data[valid_indices]
 
+    print(x_fit)
+
     # Plot the original data in black on the corresponding subplot
     axes[j].plot(x_data, y_data, color='black', label=f'Channel {chan}', linestyle='-', marker='o')
 
@@ -232,4 +236,99 @@ plt.tight_layout()
 # Save and show the plot
 plt.savefig("fitted_channel_max_values_subplots.png")
 print("Plot saved as fitted_channel_max_values_subplots.png")
+plt.show()
+
+
+# Function to update plots when a new max value is entered
+def update_plot(target_value):
+    for j, chan in enumerate(channels):
+        ax = axes[j]
+        ax.collections.clear()  # Clear previous scatter points
+
+        if chan in fits:  # Check if there is a fit for this channel
+            a, b, c, d = fits[chan]
+
+            # Find the MCP bias voltage that corresponds to the target max value
+            x_vals = np.linspace(1150, 1850, 500)  # Generate bias values within the range
+            y_vals = poly3(x_vals, a, b, c, d)     # Evaluate the fitted polynomial at those bias values
+            
+            # Interpolate to find the bias voltage for the target max value
+            try:
+                bias_voltage = np.interp(float(target_value), y_vals, x_vals)
+                
+                # Plot the dot at the corresponding MCP bias voltage
+                ax.scatter(bias_voltage, float(target_value), color='blue', s=40, zorder=5)
+                
+                # Display the corresponding bias voltage as text
+                ax.text(1200, 4100, f'Bias: {bias_voltage:.2f}', fontsize=8, color='blue')
+            except:
+                print(f"Interpolation failed for Channel {chan}")
+
+    # Redraw the figure
+    plt.draw()
+
+# Create subplots (4 rows, 4 columns)
+fig, axes = plt.subplots(4, 4, figsize=(16, 12))  # 16 subplots in total
+axes = axes.flatten()  # Flatten the 2D array of axes to iterate over them
+
+# Dictionary to store the polynomial fit coefficients for each channel
+fits = {}
+
+# Perform curve fitting for each channel and store the fit parameters
+for j, chan in enumerate(channels):
+    # Extract data for this channel
+    y_data = channel_max_values[:, j]
+    x_data = np.array(mcp_bias)
+
+    # Filter values between 2000 and 4000
+    valid_indices = (y_data >= 2000) & (y_data <= 4000)
+    x_fit = x_data[valid_indices]
+    y_fit = y_data[valid_indices]
+
+    # Plot the original data in black on the corresponding subplot
+    axes[j].plot(x_data, y_data, color='black', label=f'Channel {chan}', linestyle='-', marker='o')
+
+    if len(x_fit) > 0 and len(y_fit) > 0:
+        # Fit a third-degree polynomial to the filtered data
+        try:
+            popt, _ = curve_fit(poly3, x_fit, y_fit)
+            a, b, c, d = popt
+
+            # Store the fit parameters for later use
+            fits[chan] = popt
+
+            # Generate the fitted curve using the obtained coefficients
+            x_curve = np.linspace(min(x_fit), max(x_fit), 100)
+            y_curve = poly3(x_curve, a, b, c, d)
+
+            # Plot the fitted curve in red dashed lines
+            axes[j].plot(x_curve, y_curve, color='red', linestyle='--', label=f'Fit for Channel {chan}')
+        
+        except:
+            print(f"Curve fitting failed for Channel {chan}")
+
+    # Set the x and y limits for all subplots
+    axes[j].set_xlim([1150, 1850])
+    axes[j].set_ylim([2000, 4250])
+
+    # Set the title for each subplot
+    axes[j].set_title(f'Channel {chan}', fontsize=10)
+
+    # Add labels to the last subplot in the column
+    if j % 4 == 0:
+        axes[j].set_ylabel('Max Value', fontsize=8)
+    if j >= 12:
+        axes[j].set_xlabel('MCP Bias (Voltage)', fontsize=8)
+
+# Adjust layout to make sure titles and labels fit properly
+plt.tight_layout()
+
+# Create a text box for interactive input of the target max value
+axbox = plt.axes([0.15, 0.02, 0.7, 0.05])  # Adjust position and size of the text box
+text_box = TextBox(axbox, 'Enter Target Max Value:', initial="3000")
+
+# Define the function to be called when the user enters a value
+text_box.on_submit(update_plot)
+
+# Save and show the plot with interactive components
 plt.show()
