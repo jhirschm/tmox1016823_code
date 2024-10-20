@@ -24,6 +24,7 @@ hsdstring = {}
 ds = psana.DataSource(exp=expname,run=runnums)
 detslist = {}
 hsdnames = {}
+piranhanames = {}
 
 for r in runnums:
     run = next(ds.runs())
@@ -41,15 +42,21 @@ for r in runnums:
 
     # outnames.update({rkey:'%s/hits.%s.run_%03i.h5'%(scratchdir,expname,rkey)})
 
-    hsdslist = [s for s in detslist[rkey] if re.search('hsd',s) or re.search('fzp',s)]
+    hsdslist = [s for s in detslist[rkey] if re.search('hsd',s) ] # masks for hsds
+    piranhaschool = [s for s in detslist[rkey] if re.search('piranha',s)] # masks for piranha types
+
 
     hsdnames.update({rkey:hsdslist})
+    piranhanames.update({rkey:piranhaschool})
 
     # print('writing to %s'%outnames[rkey])
     for hsdname in hsdnames[rkey]:
         print(hsdname)
-        # port[rkey].update({hsdname:{}})
-        # chankeys[rkey].update({hsdname:{}})
+        port[rkey].update({hsdname:{}})
+        chankeys[rkey].update({hsdname:{}})
+
+        print(port)
+        print(chankeys)
         # if runhsd and hsdname in detslist[rkey]:
         #     hsds[rkey].update({hsdname:run.Detector(hsdname)})
         #     port[rkey].update({hsdname:{}})
@@ -68,3 +75,10 @@ for r in runnums:
         #             port[rkey][hsdname][k].setRollOff(1<<6)
         # else:
         #     runhsd = False
+
+    for piranhaname in piranhanames:
+        print(piranhaname)
+        # if runpiranha and piranhaname in detslist[rkey]:
+        #     piranhaschool.update({piranhaname:run.Detector(piranhaname)})
+        # else:
+        #     runpiranha = False
