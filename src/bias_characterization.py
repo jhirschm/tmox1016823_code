@@ -39,16 +39,15 @@ for i, run_num in enumerate(runs_list):
             waveforms = hsd.raw.waveforms(evt)
             if waveforms is not None:
                 # If waveforms exist, get the maximum value
-                for chan in channels:
-                    print(waveforms[chan][0])
+                for j, chan in enumerate(channels):
                     max_value = waveforms[chan][0].max()
-                    if max_value > channel_max_values[i,chan]:
-                        channel_max_values[i,chan] = max_value
+                    if max_value > channel_max_values[i,j]:
+                        channel_max_values[i,j] = max_value
                 # print(f"Max value of the waveform: {max_value}")
-            else:
-                print("No waveforms in this event.")
+            
         except Exception as e:
             # Handle any error (like missing data) and continue to next event
             print(f"Error processing event: {e}")
             continue
-    
+
+    print(channel_max_values)
