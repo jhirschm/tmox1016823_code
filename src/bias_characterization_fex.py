@@ -78,7 +78,7 @@ mcp_bias = np.array([1200, 1250, 1300, 1350, 1400, 1450, 1500, 1550, 1600, 1650,
 
 # Create a 3D array for histograms: (number of runs, number of channels, number of bins)
 binvals = np.arange(0,(1<<15)+1,1<<5)
-binvals = np.arange(0,(1<<15)+1,1<<7)
+binvals = np.arange(0,(1<<15)+1,1<<6)
 
 num_runs = len(runs_list)
 num_channels = len(channels)
@@ -121,8 +121,8 @@ for run_idx in range(num_runs):
 fig, axs = plt.subplots(nrows=len(mcp_bias), ncols=2, figsize=(10, 18), sharex=True)
 for (j,chan) in enumerate(channels):
     for i, (bias) in enumerate(zip(mcp_bias)):
-        bar = axs[i].bar(binvals[:-1],histograms[i,j,:], width=np.diff(binvals), align='edge', edgecolor='black', alpha=0.7)
-        axs[i].set_xticks([])
+        bar = axs[i,j].bar(binvals[:-1],histograms[i,j,:], width=np.diff(binvals), align='edge', edgecolor='black', alpha=0.7)
+        axs[i,j].set_xticks([])
 plt.show()
 # # Loop over each channel and create a 2D histogram
 # for j, chan in enumerate(channels):
