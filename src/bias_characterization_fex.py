@@ -38,7 +38,7 @@ channels = [0, 22, 45, 67, 90, 112, 135, 157, 180, 202, 225, 247, 270, 292, 315,
 labels = list(range(17))  # Labeled as 0 through 16
 
 runs_list = [17, 16, 15, 14 ,5,6,7,8,9, 10,11, 12,13]
-mcp_bias = [1200, 1250, 1300, 1350,1400,1450, 1500, 1550, 1600, 1650, 1700, 1750, 1800]
+mcp_bias = np.array([1200, 1250, 1300, 1350, 1400, 1450, 1500, 1550, 1600, 1650, 1700, 1750, 1800])
 # ds = psana.DataSource(exp=exp_name, run=7)
 # run = next(ds.runs())
 # hsd = run.Detector('mrco_hsd')
