@@ -16,10 +16,7 @@ exp_name = args.exp_name
 
 
 
-evt = next(run.events())
-evt = next(run.events())
 
-hsd = run.Detector('mrco_hsd')
 
 channels = [0, 22, 45, 67, 90, 112, 135, 157, 180, 202, 225, 247, 270, 292, 315, 337]
 labels = list(range(17))  # Labeled as 0 through 16
@@ -35,6 +32,8 @@ for i, run_num in enumerate(runs_list):
     ds = psana.DataSource(exp=exp_name,run=run_num)
 
     run = next(ds.runs())
+    hsd = run.Detector('mrco_hsd')
+
     events_list = list(run.events())
     print(events_list)
     # evt = next(run.events())
