@@ -62,7 +62,7 @@ else:
             except:
                 # Handle any error (like missing data) and continue to next event
                 continue
-            if num >= 4000:
+            if num >= 10000:
                 break
 
 
