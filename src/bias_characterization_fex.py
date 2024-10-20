@@ -34,7 +34,7 @@ save_plot_path = args.save_plot_path
 
 
 
-channels = [0, 22, 45, 67, 90, 112, 135, 157, 180, 202, 225, 247, 270, 292, 315, 337]
+channels = [0]#, 22, 45, 67, 90, 112, 135, 157, 180, 202, 225, 247, 270, 292, 315, 337]
 labels = list(range(17))  # Labeled as 0 through 16
 
 runs_list = [17, 16, 15, 14 ,5,6,7,8,9, 10,11, 12,13]
@@ -107,7 +107,8 @@ for i, run_num in enumerate(runs_list):
                         print(f"Value out of range for histogram bins for run {run_num}, channel {chan}: {max_value}")
         if num >= 100:
             break
-
+np.save("histograms.npy", histograms)
+np.save("binvals.npy", binvals)
 # At this point, `histograms` contains the 3D histogram counts
 # You can access them like this:
 for run_idx in range(num_runs):
@@ -133,7 +134,8 @@ for j, chan in enumerate(channels):
     plt.xlabel('Bin Values')
     plt.ylabel('MCP Bias Voltage')
     plt.colorbar(label='Counts')
-    plt.xticks(binvals, rotation=45)  # Rotate x ticks for better visibility
+    # Set x ticks to show only the first and last bin values
+    plt.xticks([binvals[0], binvals[-1]], [f'{binvals[0]}', f'{binvals[-1]}'])  # Label first and last bin
 
 # Adjust layout to prevent overlap
 plt.tight_layout()
