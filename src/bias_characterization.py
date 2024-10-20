@@ -28,8 +28,8 @@ load_path = args.load_path
 channels = [0, 22, 45, 67, 90, 112, 135, 157, 180, 202, 225, 247, 270, 292, 315, 337]
 labels = list(range(17))  # Labeled as 0 through 16
 
-runs_list = [17, 16, 15, 14 , 5,6,7,8,9,10,11, 12,13]
-mcp_bias = [1200, 1250, 1300, 1350, 1400, 1450, 1500, 1550, 1600, 1650, 1700, 1750, 1800]
+runs_list = [17, 16, 15, 14 ,   5,  6,7,8,9,  10,11, 12,13]
+mcp_bias = [1200, 1250, 1300, 1350,   1400,   1450, 1500, 1550, 1600,   1650, 1700, 1750, 1800]
 
 if load_path is not None:
     channel_max_values = np.load(load_path)
@@ -59,8 +59,8 @@ else:
             except:
                 # Handle any error (like missing data) and continue to next event
                 continue
-            # if num >= 10000:
-            #     break
+            if num >= 1000:
+                break
 
 
 print(channel_max_values)
@@ -106,4 +106,48 @@ if save_plot_path is not None:
     print(f"Plot saved to {plot_file_path}")
 
 # Display the plot
+plt.show()
+
+
+# Determine best location to run each detector
+# Takes as input the target value and must select operating bias voltage for mcp to achieve this target value
+# then plot this line on the plot
+# assume can interpolate between the values
+
+# Plotting
+colors = plt.cm.get_cmap('tab10', len(channels)).colors
+line_styles = ['-', '--']
+
+plt.figure(figsize=(10, 6))
+line_style_cycle = itertools.cycle(line_styles)
+
+for j, chan in enumerate(channels):
+    color = colors[j % len(colors)]
+    line_style = next(line_style_cycle)
+    plt.plot(mcp_bias, channel_max_values[:, j], label=f'Channel {chan}', color=color, linestyle=line_style)
+
+# Set plot labels and title
+plt.xlabel('MCP Bias (Voltage)', fontsize=12)
+plt.ylabel('Max Value', fontsize=12)
+plt.title('Max Waveform Values Across Runs for Each Channel', fontsize=14)
+
+# Add a legend
+plt.legend(loc='best', fontsize=10)
+plt.grid(True)
+
+# Specify a target value for interpolation
+target_value = 1000  # Example target value
+target_bias = []
+
+for j in range(len(channels)):
+    # Interpolate the bias voltage corresponding to the target value for each channel
+    bias = np.interp(target_value, channel_max_values[:, j], mcp_bias)
+    target_bias.append(bias)
+    
+    # Plot a vertical line at the interpolated bias voltage
+    plt.axvline(x=bias, color=colors[j % len(colors)], linestyle='--', label=f'Target for Channel {j} (Value: {target_value})')
+
+# Show the plot
+plt.savefig("channel_max_values_plot_biasLine.png")
+print("channel_max_values_plot_biasLine.png")
 plt.show()
