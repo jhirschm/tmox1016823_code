@@ -195,7 +195,7 @@ for j, chan in enumerate(channels):
     x_data = np.array(mcp_bias)
 
     # Filter values between 2500 and 3750
-    valid_indices = (y_data >= 2000) & (y_data <= 4000)
+    valid_indices = (y_data >= 2000) & (y_data <= 4100)
     x_fit = x_data[valid_indices]
     y_fit = y_data[valid_indices]
 
@@ -242,12 +242,28 @@ print("Plot saved as fitted_channel_max_values_subplots.png")
 plt.show()
 
 
-def update_plots():
-    max_value = float(max_value_entry.get())
+# Set up tkinter window
+root = tk.Tk()
+root.title("Interactive Plot for MCP Bias")
 
-    fig, axs = plt.subplots(4, 4, figsize=(15, 15))
-    axs = axs.ravel()  # Flatten the 2D array of axes
+# Create input for maximum value
+max_value_label = tk.Label(root, text="Enter Maximum Value:")
+max_value_label.pack(pady=5)
 
+max_value_entry = tk.Entry(root)
+max_value_entry.pack(pady=5)
+
+# Create Matplotlib figure and subplots
+fig, axs = plt.subplots(4, 4, figsize=(15, 15))
+axs = axs.ravel()  # Flatten the 2D array of axes
+canvas = FigureCanvasTkAgg(fig, master=root)
+canvas.get_tk_widget().pack()
+
+# Store the fitted parameters globally so they aren't recalculated
+fit_parameters = []
+
+# Initial plot setup: plot the data and fits
+def initial_plot_setup():
     for j, chan in enumerate(channels):
         y_data = channel_max_values[:, j]
         x_data = np.array(mcp_bias)
@@ -260,51 +276,59 @@ def update_plots():
         if len(x_fit) > 0 and len(y_fit) > 0:
             try:
                 popt, _ = curve_fit(poly3, x_fit, y_fit)
-                a, b, c, d = popt
+                fit_parameters.append(popt)
 
                 # Generate the fitted curve
                 x_curve = np.linspace(min(x_fit), max(x_fit), 100)
-                y_curve = poly3(x_curve, a, b, c, d)
+                y_curve = poly3(x_curve, *popt)
 
                 # Plot the original data and the fitted curve
                 axs[j].plot(x_data, y_data, 'o', color='black', label=f'Channel {chan}')
                 axs[j].plot(x_curve, y_curve, color='red', linestyle='--', label='Fit')
 
-                # Find the bias voltage for the given max_value
-                fitted_max_value = poly3(max_value, a, b, c, d)
-                axs[j].plot(max_value, fitted_max_value, 'p', color='blue', markersize=10, label='Selected Point')
-
                 # Set plot limits and titles
                 axs[j].set_xlim(1150, 1850)
                 axs[j].set_ylim(2000, 4250)
-                axs[j].set_title(f'Channel {chan} - Bias {max_value:.2f}')
+                axs[j].set_title(f'Channel {chan} - No Max Value Set')
                 axs[j].legend()
 
             except:
                 axs[j].set_title(f"Channel {chan} - Fit Failed")
 
-    # Update the canvas with new plots
     canvas.draw()
 
-# Set up tkinter window
-root = tk.Tk()
-root.title("Interactive Plot for MCP Bias")
+# Update only the markers and bias text when the max value is changed
+def update_plots():
+    max_value = float(max_value_entry.get())
 
-# Create input for maximum value
-max_value_label = tk.Label(root, text="Enter Maximum Value:")
-max_value_label.pack(pady=5)
+    for j, chan in enumerate(channels):
+        a, b, c, d = fit_parameters[j]
 
-max_value_entry = tk.Entry(root)
-max_value_entry.pack(pady=5)
+        # Find the bias voltage for the given max_value
+        fitted_bias_voltage = np.roots([a, b, c, d - max_value])
+
+        # We only want real roots, select one within the MCP bias range
+        fitted_bias_voltage = fitted_bias_voltage[np.isreal(fitted_bias_voltage)].real
+        fitted_bias_voltage = fitted_bias_voltage[(fitted_bias_voltage >= 1150) & (fitted_bias_voltage <= 1850)]
+
+        if len(fitted_bias_voltage) > 0:
+            fitted_bias_voltage = fitted_bias_voltage[0]  # Use the first valid bias voltage
+
+            # Clear previous marker and add the new marker at the max value
+            axs[j].collections.clear()  # Clear previous markers
+            axs[j].plot(fitted_bias_voltage, max_value, 'p', color='blue', markersize=10, label='Selected Point')
+
+            # Update the title with the bias voltage
+            axs[j].set_title(f'Channel {chan} - Bias {fitted_bias_voltage:.2f}')
+
+    canvas.draw()
+
+# Initial plot setup (run only once)
+initial_plot_setup()
 
 # Create a button to update plots
 update_button = tk.Button(root, text="Update Plots", command=update_plots)
 update_button.pack(pady=5)
-
-# Create Matplotlib figure
-fig, axs = plt.subplots(4, 4, figsize=(15, 15))
-canvas = FigureCanvasTkAgg(fig, master=root)
-canvas.get_tk_widget().pack()
 
 # Run the tkinter main loop
 root.mainloop()
