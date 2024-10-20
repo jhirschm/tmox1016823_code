@@ -34,7 +34,7 @@ save_plot_path = args.save_plot_path
 
 
 
-channels = [0, 270]#, 22, 45, 67, 90, 112, 135, 157, 180, 202, 225, 247, 270, 292, 315, 337]
+channels = [0, 22, 45, 67, 90, 112, 135, 157, 180, 202, 225, 247, 270, 292, 315, 337]
 labels = list(range(17))  # Labeled as 0 through 16
 
 runs_list = [17, 16, 15, 14 ,5,6,7,8,9, 10,11, 12,13]
@@ -83,6 +83,8 @@ binvals = np.arange(0,(1<<15)+1,1<<6)
 num_runs = len(runs_list)
 num_channels = len(channels)
 histograms = np.zeros((num_runs, num_channels, len(binvals) - 1))
+channel_max_values = np.zeros((len(runs_list),len(channels)))
+
 
 for i, run_num in enumerate(runs_list):
     ds = psana.DataSource(exp=exp_name, run=run_num)
@@ -94,6 +96,8 @@ for i, run_num in enumerate(runs_list):
         peaks = hsd.raw.peaks(evt)
 
         for j, chan in enumerate(channels):
+            
+                            
             # Ensure the channel exists in the peaks
             if chan in peaks:
                 for k in range(len(peaks[chan][0][1])):
@@ -107,10 +111,14 @@ for i, run_num in enumerate(runs_list):
                         histograms[i, j, bin_index] += 1  # Increment the count in the appropriate bin
                     else:
                         print(f"Value out of range for histogram bins for run {run_num}, channel {chan}: {max_value}")
-        if num >= 100:
+                    if max_value > channel_max_values[i,j]:
+                        channel_max_values[i,j] = max_value
+
+        if num >= 10000:
             break
-np.save("histograms2.npy", histograms)
-np.save("binvals2.npy", binvals)
+np.save("histograms3.npy", histograms)
+np.save("binvals3.npy", binvals)
+np.save("channel_max_values_fex3.npy", channel_max_values)
 # At this point, `histograms` contains the 3D histogram counts
 # You can access them like this:
 for run_idx in range(num_runs):
@@ -118,12 +126,12 @@ for run_idx in range(num_runs):
         print(f"Run {runs_list[run_idx]}, Channel {channels[chan_idx]} Histogram Counts: {histograms[run_idx, chan_idx]}")
 
 
-fig, axs = plt.subplots(nrows=len(mcp_bias), ncols=2, figsize=(10, 18), sharex=True)
-for (j,chan) in enumerate(channels):
-    for i, (bias) in enumerate(zip(mcp_bias)):
-        bar = axs[i,j].bar(binvals[:-1],histograms[i,j,:], width=np.diff(binvals), align='edge', edgecolor='black', alpha=0.7)
-        axs[i,j].set_xticks([])
-plt.show()
+# fig, axs = plt.subplots(nrows=len(mcp_bias), ncols=2, figsize=(10, 18), sharex=True)
+# for (j,chan) in enumerate(channels):
+#     for i, (bias) in enumerate(zip(mcp_bias)):
+#         bar = axs[i,j].bar(binvals[:-1],histograms[i,j,:], width=np.diff(binvals), align='edge', edgecolor='black', alpha=0.7)
+#         axs[i,j].set_xticks([])
+# plt.show()
 # # Loop over each channel and create a 2D histogram
 # for j, chan in enumerate(channels):
 #     plt.subplot(4, 4, j + 1)  # Use a 4x4 grid for 16 channels
