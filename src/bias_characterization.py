@@ -37,13 +37,14 @@ for i, run_num in enumerate(runs_list):
         try:
             # Try to extract the waveform data
             waveforms = hsd.raw.waveforms(evt)
+            print(waveforms)
             if waveforms is not None:
                 # If waveforms exist, get the maximum value
                 for chan in channels:
                     max_value = waveforms[chan][0].max()
                     if max_value > channel_max_values[i,chan]:
                         channel_max_values[i,chan] = max_value
-                print(f"Max value of the waveform: {max_value}")
+                # print(f"Max value of the waveform: {max_value}")
             else:
                 print("No waveforms in this event.")
         except Exception as e:
