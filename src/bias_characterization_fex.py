@@ -39,18 +39,105 @@ labels = list(range(17))  # Labeled as 0 through 16
 
 runs_list = [17, 16, 15, 14 ,5,6,7,8,9, 10,11, 12,13]
 mcp_bias = [1200, 1250, 1300, 1350,1400,1450, 1500, 1550, 1600, 1650, 1700, 1750, 1800]
-ds = psana.DataSource(exp=exp_name, run=7)
-run = next(ds.runs())
-hsd = run.Detector('mrco_hsd')
-evt = next(run.events())
-evt = next(run.events())
+# ds = psana.DataSource(exp=exp_name, run=7)
+# run = next(ds.runs())
+# hsd = run.Detector('mrco_hsd')
+# evt = next(run.events())
+# evt = next(run.events())
 
-evt = next(run.events())
+# evt = next(run.events())
 
-ch=0
-_=[plt.plot(np.arange(hsd.raw.peaks(evt)[ch][0][0][i],hsd.raw.peaks(evt)[ch][0][0][i]+len(hsd.raw.peaks(evt)[ch][0][1][i])),hsd.raw.peaks(evt)[ch][0][1][i]//(1<<3)) for i in range(len(hsd.raw.peaks(evt)[ch][0][1]))]
+# ch=0
+# _=[plt.plot(np.arange(hsd.raw.peaks(evt)[ch][0][0][i],hsd.raw.peaks(evt)[ch][0][0][i]+len(hsd.raw.peaks(evt)[ch][0][1][i])),hsd.raw.peaks(evt)[ch][0][1][i]//(1<<3)) for i in range(len(hsd.raw.peaks(evt)[ch][0][1]))]
+# plt.show()
+
+# # Create a histogram for the fex values  for max peak heights in each window in the fex for an event 
+# binvals = np.arange(0,(1<<15)+1,1<<5)
+# hist = np.zeros(len(binvals)-1)
+# for i, run_num in enumerate(runs_list):
+#     ds = psana.DataSource(exp=exp_name, run=run_num)
+#     run = next(ds.runs())
+#     hsd = run.Detector('mrco_hsd')
+
+#     # Loop through all events in the run
+#     for num, evt in enumerate(run.events()):
+        
+#         peaks = hsd.raw.peaks(evt)
+#         for j, chan in enumerate(channels):
+#             for k in range(len(hsd.raw.peaks(evt)[ch][0][1])):
+#                 max = hsd.raw.peaks(evt)[ch][0][1][k].max()
+#                 # Find the appropriate bin index for the single value
+#                 bin_index = np.digitize(max, binvals) - 1  # Subtract 1 to convert to zero-based index
+
+#                 # Ensure the bin index is within the valid range
+#                 if 0 <= bin_index < len(hist):
+#                     hist[bin_index] += 1  # Increment the count in the appropriate bin
+#                 else:
+#                     print("Value out of range for histogram bins.")
+
+
+# Create a 3D array for histograms: (number of runs, number of channels, number of bins)
+binvals = np.arange(0,(1<<15)+1,1<<5)
+num_runs = len(runs_list)
+num_channels = len(channels)
+histograms = np.zeros((num_runs, num_channels, len(binvals) - 1))
+
+for i, run_num in enumerate(runs_list):
+    ds = psana.DataSource(exp=exp_name, run=run_num)
+    run = next(ds.runs())
+    hsd = run.Detector('mrco_hsd')
+
+    # Loop through all events in the run
+    for num, evt in enumerate(run.events()):
+        peaks = hsd.raw.peaks(evt)
+
+        for j, chan in enumerate(channels):
+            # Ensure the channel exists in the peaks
+            if chan in peaks:
+                for k in range(len(peaks[chan][0][1])):
+                    max_value = peaks[chan][0][1][k].max()  # Get the maximum value for the peak
+                    
+                    # Find the appropriate bin index for the single value
+                    bin_index = np.digitize(max_value, binvals) - 1  # Subtract 1 to convert to zero-based index
+
+                    # Ensure the bin index is within the valid range
+                    if 0 <= bin_index < len(histograms[i, j]):
+                        histograms[i, j, bin_index] += 1  # Increment the count in the appropriate bin
+                    else:
+                        print(f"Value out of range for histogram bins for run {run_num}, channel {chan}: {max_value}")
+        if num >= 100:
+            break
+
+# At this point, `histograms` contains the 3D histogram counts
+# You can access them like this:
+for run_idx in range(num_runs):
+    for chan_idx in range(num_channels):
+        print(f"Run {runs_list[run_idx]}, Channel {channels[chan_idx]} Histogram Counts: {histograms[run_idx, chan_idx]}")
+
+# Loop over each channel and create a 2D histogram
+for j, chan in enumerate(channels):
+    plt.subplot(4, 4, j + 1)  # Use a 4x4 grid for 16 channels
+    
+    # Extract counts for the current channel across runs
+    counts = histograms[:, j, :]  # Shape: (number of runs, number of bins)
+    
+    # Create the 2D histogram
+    plt.hist2d(mcp_bias.repeat(counts.shape[1]), 
+               np.tile(np.arange(counts.shape[1]), counts.shape[0]), 
+               weights=counts.flatten(), 
+               bins=[binvals, len(mcp_bias)], 
+               cmap='viridis', 
+               cmin=0)  # Set cmin to ensure counts below a threshold aren't plotted
+
+    plt.title(f'Channel {chan} 2D Histogram')
+    plt.xlabel('Bin Values')
+    plt.ylabel('MCP Bias Voltage')
+    plt.colorbar(label='Counts')
+    plt.xticks(binvals, rotation=45)  # Rotate x ticks for better visibility
+
+# Adjust layout to prevent overlap
+plt.tight_layout()
 plt.show()
-
 # if load_path is not None:
 #     channel_max_values = np.load(load_path)
 #     print(f"NumPy array loaded from {load_path}")
