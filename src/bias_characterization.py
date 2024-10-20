@@ -33,7 +33,7 @@ for i, run_num in enumerate(runs_list):
     hsd = run.Detector('mrco_hsd')
 
     # Loop through all events in the run
-    for evt in run.events():
+    for num, evt in enumerate(run.events()):
         try:
             # Try to extract the waveform data
             waveforms = hsd.raw.waveforms(evt)
@@ -48,5 +48,7 @@ for i, run_num in enumerate(runs_list):
         except:
             # Handle any error (like missing data) and continue to next event
             continue
+        if num >= 1000:
+            break
 
     print(channel_max_values)
