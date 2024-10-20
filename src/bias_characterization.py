@@ -21,8 +21,8 @@ exp_name = args.exp_name
 channels = [0, 22, 45, 67, 90, 112, 135, 157, 180, 202, 225, 247, 270, 292, 315, 337]
 labels = list(range(17))  # Labeled as 0 through 16
 
-runs_list = [5,6,7,8,9,10,11,13]
-mcp_bias = [1400,1450,1500,1550,1600,1650,1700,1800]
+runs_list = [14, 15, 16, 17, 5,6,7,8,9,10,11,13]
+mcp_bias = [1200, 1250, 1300, 1400, 1450, 1500, 1550, 1600, 1650, 1700, 1800]
 
 
 channel_max_values = np.zeros((len(runs_list),len(channels)))
@@ -51,4 +51,26 @@ for i, run_num in enumerate(runs_list):
         if num >= 1000:
             break
 
-    print(channel_max_values)
+
+print(channel_max_values)
+
+# Initialize a new plot
+plt.figure(figsize=(10, 6))
+
+# Iterate through each channel and plot its max values across runs
+for j, chan in enumerate(channels):
+    plt.plot(mcp_bias, channel_max_values[:, j], label=f'Channel {chan}')
+
+# Set plot labels and title
+plt.xlabel('MCP Bias (Voltage)', fontsize=12)
+plt.ylabel('Max Value', fontsize=12)
+plt.title('Max Waveform Values Across Runs for Each Channel', fontsize=14)
+
+# Add a legend to differentiate the channels
+plt.legend(loc='best', fontsize=10)
+
+# Show the grid
+plt.grid(True)
+
+# Display the plot
+plt.show()
