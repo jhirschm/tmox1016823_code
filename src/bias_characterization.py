@@ -31,8 +31,8 @@ save_plot_path = args.save_plot_path
 channels = [0, 22, 45, 67, 90, 112, 135, 157, 180, 202, 225, 247, 270, 292, 315, 337]
 labels = list(range(17))  # Labeled as 0 through 16
 
-runs_list = [17, 16, 15, 14 ,   5,  6,7,8,9,  10,11, 12,13]
-mcp_bias = [1200, 1250, 1300, 1350,   1400,   1450, 1500, 1550, 1600,   1650, 1700, 1750, 1800]
+runs_list = [17, 16, 15, 14 ,5,6,7,8,9, 10,11, 12,13]
+mcp_bias = [1200, 1250, 1300, 1350,1400,1450, 1500, 1550, 1600, 1650, 1700, 1750, 1800]
 
 if load_path is not None:
     channel_max_values = np.load(load_path)
@@ -62,7 +62,7 @@ else:
             except:
                 # Handle any error (like missing data) and continue to next event
                 continue
-            if num >= 1000:
+            if num >= 4000:
                 break
 
 
@@ -139,16 +139,17 @@ plt.legend(loc='best', fontsize=10)
 plt.grid(True)
 
 # Specify a target value for interpolation
-target_value = 1000  # Example target value
+target_value = 3000  # Example target value
 target_bias = []
 
 for j in range(len(channels)):
     # Interpolate the bias voltage corresponding to the target value for each channel
     bias = np.interp(target_value, channel_max_values[:, j], mcp_bias)
     target_bias.append(bias)
+
+print(target_bias)
     
-    # Plot a vertical line at the interpolated bias voltage
-    plt.axvline(x=bias, color=colors[j % len(colors)], linestyle='--', label=f'Target for Channel {j} (Value: {target_value})')
+plt.axhline(y=target_value, color='red', linestyle='--', linewidth=2, label=f'Max Value Target: {target_value}')
 
 # Show the plot
 plt.savefig("channel_max_values_plot_biasLine.png")
