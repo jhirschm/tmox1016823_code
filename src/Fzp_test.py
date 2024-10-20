@@ -78,8 +78,8 @@ for r in runnums:
         # else:
         #     runhsd = False
 
-    for piranhaname in piranhanames:
-        print("name "+piranhaname)
+    for piranhaname in piranhanames[rkey]:
+        print(piranhaname)
         # if runpiranha and piranhaname in detslist[rkey]:
         #     piranhaschool.update({piranhaname:run.Detector(piranhaname)})
         # else:
