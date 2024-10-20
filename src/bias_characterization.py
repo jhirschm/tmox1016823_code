@@ -2,6 +2,8 @@ import psana
 import matplotlib.pyplot as plt
 import numpy as np
 import argparse
+import itertools
+
 
 # Set up argument parser to take show_fourier as a command-line argument
 parser = argparse.ArgumentParser(description='Experiment.')
@@ -21,8 +23,8 @@ exp_name = args.exp_name
 channels = [0, 22, 45, 67, 90, 112, 135, 157, 180, 202, 225, 247, 270, 292, 315, 337]
 labels = list(range(17))  # Labeled as 0 through 16
 
-runs_list = [14, 15, 16, 17, 5,6,7,8,9,10,11,13]
-mcp_bias = [1200, 1250, 1300, 1350, 1400, 1450, 1500, 1550, 1600, 1650, 1700, 1800]
+runs_list = [17, 16, 15, 14 , 5,6,7,8,9,10,11, 12,13]
+mcp_bias = [1200, 1250, 1300, 1350, 1400, 1450, 1500, 1550, 1600, 1650, 1700, 1750, 1800]
 
 
 channel_max_values = np.zeros((len(runs_list),len(channels)))
@@ -48,18 +50,27 @@ for i, run_num in enumerate(runs_list):
         except:
             # Handle any error (like missing data) and continue to next event
             continue
-        if num >= 1000:
+        if num >= 10000:
             break
 
 
 print(channel_max_values)
 
-# Initialize a new plot
+# Define a list of colors and line styles
+colors = plt.cm.get_cmap('tab10', len(channels)).colors  # Use tab10 colormap for distinct colors
+line_styles = ['-', '--']  # Solid and dashed lines
+
+# Initialize the plot
 plt.figure(figsize=(10, 6))
 
-# Iterate through each channel and plot its max values across runs
+# Cycle through line styles and colors
+line_style_cycle = itertools.cycle(line_styles)
+
+# Plot each channel's max values with different colors and alternating line styles
 for j, chan in enumerate(channels):
-    plt.plot(mcp_bias, channel_max_values[:, j], label=f'Channel {chan}')
+    color = colors[j % len(colors)]  # Cycle through the colors
+    line_style = next(line_style_cycle)  # Alternate between solid and dashed lines
+    plt.plot(mcp_bias, channel_max_values[:, j], label=f'Channel {chan}', color=color, linestyle=line_style)
 
 # Set plot labels and title
 plt.xlabel('MCP Bias (Voltage)', fontsize=12)
