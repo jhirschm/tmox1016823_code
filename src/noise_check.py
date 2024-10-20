@@ -13,6 +13,8 @@ show_fourier = args.show_fourier  # This is the variable that will be True or Fa
 
 
 ds = psana.DataSource(exp='tmoc00123',run=22)
+ds = psana.DataSource(exp='tmox1016823', run=7)
+
 
 run = next(ds.runs())
 ch = 22
