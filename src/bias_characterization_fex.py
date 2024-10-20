@@ -43,7 +43,11 @@ ds = psana.DataSource(exp=exp_name, run=7)
 run = next(ds.runs())
 hsd = run.Detector('mrco_hsd')
 evt = next(run.events())
-ch=180
+evt = next(run.events())
+
+evt = next(run.events())
+
+ch=0
 _=[plt.plot(np.arange(hsd.raw.peaks(evt)[ch][0][0][i],hsd.raw.peaks(evt)[ch][0][0][i]+len(hsd.raw.peaks(evt)[ch][0][1][i])),hsd.raw.peaks(evt)[ch][0][1][i]//(1<<3)) for i in range(len(hsd.raw.peaks(evt)[ch][0][1]))]
 plt.show()
 
