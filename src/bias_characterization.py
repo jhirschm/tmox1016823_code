@@ -9,6 +9,8 @@ import itertools
 parser = argparse.ArgumentParser(description='Experiment.')
 parser.add_argument('--exp-name', type=str, help='Name of the experiment.')
 parser.add_argument('--load-path', type=str, default=None, help='Path to load data (default: None).')
+parser.add_argument('--save-plot-path', type=str, default=None, help='Path to load data (default: None).')
+
 
 
 # Parse the arguments
@@ -18,6 +20,7 @@ args = parser.parse_args()
 # Access the experiment name
 exp_name = args.exp_name
 load_path = args.load_path
+save_plot_path = args.save_plot_path
 
 
 
@@ -102,8 +105,8 @@ plt.grid(True)
 
 if save_plot_path is not None:
     # Save the plot
-    plt.savefig(plot_file_path)
-    print(f"Plot saved to {plot_file_path}")
+    plt.savefig(save_plot_path)
+    print(f"Plot saved to {save_plot_path}")
 
 # Display the plot
 plt.show()
