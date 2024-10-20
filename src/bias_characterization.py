@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import argparse
 import itertools
+from scipy.optimize import curve_fit
 
 
 # Set up argument parser to take show_fourier as a command-line argument
@@ -155,3 +156,34 @@ plt.axhline(y=target_value, color='red', linestyle='--', linewidth=2, label=f'Ma
 plt.savefig("channel_max_values_plot_biasLine.png")
 print("channel_max_values_plot_biasLine.png")
 plt.show()
+
+
+# Define a fitting function (e.g., a second-degree polynomial)
+def poly2(x, a, b, c, d):
+    return a*x**3 + b*x**2 + c*x + d
+
+# Perform curve fitting for each channel for max values between 2500 and 3750
+for j, chan in enumerate(channels):
+    # Extract data for this channel
+    y_data = channel_max_values[:, j]
+    x_data = np.array(mcp_bias)
+
+    # Filter values between 2500 and 3750
+    valid_indices = (y_data >= 2500) & (y_data <= 3750)
+    x_fit = x_data[valid_indices]
+    y_fit = y_data[valid_indices]
+
+    if len(x_fit) > 0 and len(y_fit) > 0:
+        # Fit a second-degree polynomial to the data
+        try:
+            popt, _ = curve_fit(poly2, x_fit, y_fit)
+            a, b, c = popt
+
+            # Generate the fitted curve using the obtained coefficients
+            x_curve = np.linspace(min(x_fit), max(x_fit), 100)
+            y_curve = poly2(x_curve, a, b, c)
+
+            # Plot the fitted curve for this channel
+            plt.plot(x_curve, y_curve, label=f'Fit for Channel {chan}', color=colors[j % len(colors)], linestyle=':')
+        except:
+            print(f"Curve fitting failed for Channel {chan}")
