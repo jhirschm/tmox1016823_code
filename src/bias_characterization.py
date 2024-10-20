@@ -21,7 +21,6 @@ exp_name = args.exp_name
 channels = [0, 22, 45, 67, 90, 112, 135, 157, 180, 202, 225, 247, 270, 292, 315, 337]
 labels = list(range(17))  # Labeled as 0 through 16
 
-
 runs_list = [6,7,8,9,10,11,13]
 mcp_bias = [1450,1500,1550,1600,1650,1700,1800]
 
@@ -29,19 +28,26 @@ mcp_bias = [1450,1500,1550,1600,1650,1700,1800]
 channel_max_values = np.zeros((len(runs_list),len(channels)))
 
 for i, run_num in enumerate(runs_list):
-    ds = psana.DataSource(exp=exp_name,run=run_num)
-
+    ds = psana.DataSource(exp=exp_name, run=run_num)
     run = next(ds.runs())
     hsd = run.Detector('mrco_hsd')
 
-    events_list = list(run.events())
-    print(events_list)
-    # evt = next(run.events())
-    # while True:
-    #     try:
-    #         w_event = hsd.raw.waveforms(evt)   # Extract the waveform data
-    #     except:
-    #         evt = next(run.events())           # Try the next event if the current one fails
-    #     else:
-    #         break
+    # Loop through all events in the run
+    for evt in run.events():
+        try:
+            # Try to extract the waveform data
+            waveforms = hsd.raw.waveforms(evt)
+            if waveforms is not None:
+                # If waveforms exist, get the maximum value
+                for chan in channels:
+                    max_value = waveforms[chan][0].max()
+                    if max_value > channel_max_values[i,chan]:
+                        channel_max_values[i,chan] = max_value
+                print(f"Max value of the waveform: {max_value}")
+            else:
+                print("No waveforms in this event.")
+        except Exception as e:
+            # Handle any error (like missing data) and continue to next event
+            print(f"Error processing event: {e}")
+            continue
     
