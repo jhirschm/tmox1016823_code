@@ -148,18 +148,25 @@ for j in range(len(channels)):
     bias = np.interp(target_value, channel_max_values[:, j], mcp_bias)
     target_bias.append(bias)
 
+    # Plot a black dot at the interpolated bias value and the target value
+    plt.scatter(bias, target_value, color='black', zorder=5)
+
+    # Add the text of the bias value on the right side of the plot
+    plt.text(1.02, target_value - (j * 50), f'Ch {chan}: Bias={bias:.2f}', transform=plt.gca().transAxes, 
+             fontsize=9, color='black', verticalalignment='center')
+
 print(target_bias)
     
 plt.axhline(y=target_value, color='red', linestyle='--', linewidth=2, label=f'Max Value Target: {target_value}')
 
 # Show the plot
-plt.savefig("channel_max_values_plot_biasLine.png")
+plt.savefig("channel_max_values_plot_biasLine_labeled.png")
 print("channel_max_values_plot_biasLine.png")
 plt.show()
 
 
 # Define a fitting function (e.g., a second-degree polynomial)
-def poly2(x, a, b, c, d):
+def poly3(x, a, b, c, d):
     return a*x**3 + b*x**2 + c*x + d
 
 # Perform curve fitting for each channel for max values between 2500 and 3750
@@ -169,19 +176,19 @@ for j, chan in enumerate(channels):
     x_data = np.array(mcp_bias)
 
     # Filter values between 2500 and 3750
-    valid_indices = (y_data >= 2500) & (y_data <= 3750)
+    valid_indices = (y_data >= 2000) & (y_data <= 4000)
     x_fit = x_data[valid_indices]
     y_fit = y_data[valid_indices]
 
     if len(x_fit) > 0 and len(y_fit) > 0:
         # Fit a second-degree polynomial to the data
         try:
-            popt, _ = curve_fit(poly2, x_fit, y_fit)
-            a, b, c = popt
+            popt, _ = curve_fit(poly3, x_fit, y_fit)
+            a, b, c, d = popt
 
             # Generate the fitted curve using the obtained coefficients
             x_curve = np.linspace(min(x_fit), max(x_fit), 100)
-            y_curve = poly2(x_curve, a, b, c)
+            y_curve = poly3(x_curve, a, b, c, d)
 
             # Plot the fitted curve for this channel
             plt.plot(x_curve, y_curve, label=f'Fit for Channel {chan}', color=colors[j % len(colors)], linestyle=':')
