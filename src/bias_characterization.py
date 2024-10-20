@@ -152,13 +152,22 @@ for j in range(len(channels)):
     plt.scatter(bias, target_value, color='black', zorder=5)
 
     
-    # Add the text of the bias value near the black dot (to the right and slightly above)
-    plt.text(bias + 10, target_value + 50 - (j * 100), f'Ch {chan}: Bias={bias:.2f}', 
-             fontsize=9, color='black', verticalalignment='center')
+    # # Add the text of the bias value near the black dot (to the right and slightly above)
+    # plt.text(bias + 10, target_value + 50 - (j * 100), f'Ch {chan}: Bias={bias:.2f}', 
+    #          fontsize=9, color='black', verticalalignment='center')
 
 print(target_bias)
     
 plt.axhline(y=target_value, color='red', linestyle='--', linewidth=2, label=f'Max Value Target: {target_value}')
+
+# Adjust the layout to create space for the text on the side
+plt.subplots_adjust(right=0.75)  # Leave space on the right side of the plot for text box
+
+# Create the text box to the right of the plot
+bias_text = "\n".join([f"Ch {chan}: Bias={bias:.2f}" for chan, bias in zip(channels, target_bias)])
+
+# Add the text box to the right side using figtext
+plt.figtext(0.78, 0.5, bias_text, fontsize=10, ha='left', va='center', bbox=dict(facecolor='white', edgecolor='black'))
 
 # Show the plot
 plt.savefig("channel_max_values_plot_biasLine_labeled.png")
@@ -169,6 +178,10 @@ plt.show()
 # Define a fitting function (e.g., a second-degree polynomial)
 def poly3(x, a, b, c, d):
     return a*x**3 + b*x**2 + c*x + d
+
+# Create subplots (4 rows, 4 columns)
+fig, axes = plt.subplots(4, 4, figsize=(16, 12))  # 16 subplots in total
+axes = axes.flatten()  # Flatten the 2D array of axes to iterate over them
 
 # Perform curve fitting for each channel for max values between 2500 and 3750
 for j, chan in enumerate(channels):
@@ -181,8 +194,11 @@ for j, chan in enumerate(channels):
     x_fit = x_data[valid_indices]
     y_fit = y_data[valid_indices]
 
+    # Plot the original data in black on the corresponding subplot
+    axes[j].plot(x_data, y_data, color='black', label=f'Channel {chan}', linestyle='-', marker='o')
+
     if len(x_fit) > 0 and len(y_fit) > 0:
-        # Fit a second-degree polynomial to the data
+        # Fit a third-degree polynomial to the filtered data
         try:
             popt, _ = curve_fit(poly3, x_fit, y_fit)
             a, b, c, d = popt
@@ -191,8 +207,29 @@ for j, chan in enumerate(channels):
             x_curve = np.linspace(min(x_fit), max(x_fit), 100)
             y_curve = poly3(x_curve, a, b, c, d)
 
-            # Plot the fitted curve for this channel
-            plt.plot(x_curve, y_curve, label=f'Fit for Channel {chan}', color=colors[j % len(colors)], linestyle=':')
+            # Plot the fitted curve in red dashed lines
+            axes[j].plot(x_curve, y_curve, color='red', linestyle='--', label=f'Fit for Channel {chan}')
+        
         except:
             print(f"Curve fitting failed for Channel {chan}")
-    plt.show()
+
+    # Set the x and y limits for all subplots
+    axes[j].set_xlim([1150, 1850])
+    axes[j].set_ylim([2000, 4250])
+
+    # Set the title for each subplot
+    axes[j].set_title(f'Channel {chan}', fontsize=10)
+
+    # Add labels to the last subplot in the column
+    if j % 4 == 0:
+        axes[j].set_ylabel('Max Value', fontsize=8)
+    if j >= 12:
+        axes[j].set_xlabel('MCP Bias (Voltage)', fontsize=8)
+
+# Adjust layout to make sure titles and labels fit properly
+plt.tight_layout()
+
+# Save and show the plot
+plt.savefig("fitted_channel_max_values_subplots.png")
+print("Plot saved as fitted_channel_max_values_subplots.png")
+plt.show()
