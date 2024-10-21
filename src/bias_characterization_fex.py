@@ -208,7 +208,7 @@ for j in range(len(channels)):
     # plt.text(bias + 10, target_value + 50 - (j * 100), f'Ch {chan}: Bias={bias:.2f}', 
     #          fontsize=9, color='black', verticalalignment='center')
 
-print(target_bias)
+# print(target_bias)
     
 plt.axhline(y=target_value, color='red', linestyle='--', linewidth=2, label=f'Max Value Target: {target_value}')
 
@@ -228,22 +228,22 @@ plt.show()
 
 # At this point, `histograms` contains the 3D histogram counts
 # You can access them like this:
-for run_idx in range(num_runs):
-    for chan_idx in range(num_channels):
-        print(f"Run {runs_list[run_idx]}, Channel {channels[chan_idx]} Histogram Counts: {histograms[run_idx, chan_idx]}")
+# for run_idx in range(num_runs):
+#     for chan_idx in range(num_channels):
+#         print(f"Run {runs_list[run_idx]}, Channel {channels[chan_idx]} Histogram Counts: {histograms[run_idx, chan_idx]}")
 
 for i, chan in enumerate(channels):
     fig, axs = plt.subplots(nrows=len(mcp_bias), ncols=1, figsize=(10, 18), sharex=True)
 
     for j in range(len(mcp_bias)):
         # Plot each histogram with legends
-        axs[j].bar(binvals[300:-1], histograms[j, chan, 300:], width=np.diff(binvals[300:]), align='edge', edgecolor='black', alpha=0.7)
+        axs[j].bar(binvals[300:-1], histograms[j, i, 300:], width=np.diff(binvals[300:]), align='edge', edgecolor='black', alpha=0.7)
 
         # Set y-axis limits
         axs[j].set_ylim(0, 60)
 
-        # Add legends for MCP Bias instead of subtitles
-        axs[j].legend([f'MCP Bias: {mcp_bias[j]}'], loc='upper right', fontsize=10)
+        # Add title for each subplot with the MCP Bias value
+        axs[j].set_title(f'MCP Bias: {mcp_bias[j]}', fontsize=12)
 
     # Set the main title for the entire plot based on channel number
     fig.suptitle(f'Channel {chan} - FEX Max Pulse Height per Window', fontsize=16)
@@ -252,8 +252,8 @@ for i, chan in enumerate(channels):
     axs[-1].set_xlabel('FEX Max Pulse Height per Window', fontsize=12)
     axs[0].set_ylabel('Counts', fontsize=12)
 
-    # Adjust layout for better spacing
-    fig.tight_layout(rect=[0, 0, 1, 0.95])  # Leave space for the main title
+    # Adjust layout for better spacing with your specific settings
+    plt.subplots_adjust(top=0.92, bottom=0.05, left=0.125, right=0.9, hspace=0.7, wspace=0.6)
 
     # Show the plot
     plt.show()
