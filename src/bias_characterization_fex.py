@@ -103,7 +103,7 @@ else:
 
 if max_load_path is not None:
     channel_max_values = np.load(max_load_path)
-    print(f"NumPy array loaded from {load_path}")
+    print(f"NumPy array loaded from {max_load_path}")
 else:
     channel_max_values = np.zeros((len(runs_list),len(channels)))
 
