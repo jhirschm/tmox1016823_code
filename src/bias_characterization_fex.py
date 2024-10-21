@@ -100,7 +100,7 @@ for i, run_num in enumerate(runs_list):
                             
             
             for k in range(len(peaks[chan][0][1])):
-                if len(peaks[chan][0][1][k]) > 2:
+                if len(peaks[chan][0][1]) > 2:
                     max_value = peaks[chan][0][1][k].max()  # Get the maximum value for the peak
                     
                     # Find the appropriate bin index for the single value
