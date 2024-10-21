@@ -98,9 +98,9 @@ if max_load_path is None and hist_load_path is None and min_load_path is None:
 if save_plot_path:
     np.save(f"{save_plot_path}/histograms_max.npy", histograms_max)
     np.save(f"{save_plot_path}/histograms_min.npy", histograms_min)
-    np.save(f"{save_plot_path}/binvals.npy", binvals)
-    np.save(f"{save_plot_path}/channel_max_values.npy", channel_max_values)
-    np.save(f"{save_plot_path}/channel_min_values.npy", channel_min_values)
+    np.save(f"{save_plot_path}/binvals_minMax.npy", binvals)
+    np.save(f"{save_plot_path}/channel_max_values_minMax..npy", channel_max_values)
+    np.save(f"{save_plot_path}/channel_min_values_minMax..npy", channel_min_values)
 
 # Now histograms_max and histograms_min contain the separate histograms for max and min values
 # Proceed to create the plots for both sets of histograms
