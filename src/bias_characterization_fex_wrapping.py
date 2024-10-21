@@ -93,7 +93,7 @@ if max_load_path is None and hist_load_path is None and min_load_path is None:
 
             if num >= event_num_break:  # Break the loop after processing a certain number of events
                 break
-        print(f"Run {run_num} completed with {processed_events} events processed.")
+        print(f"Run {run_num} completed with {processed_events} events processed after cycling over {num} events.")
 # Optionally save the histograms and bin values
 if save_plot_path:
     np.save(f"{save_plot_path}/histograms_max.npy", histograms_max)
@@ -137,7 +137,7 @@ with PdfPages(f'{save_plot_path}/channel_plots_min.pdf') as pdf:
 
         for j in range(len(mcp_bias)):
             # Plot each min histogram with legends
-            axs[j].bar(binvals[0:100], histograms_min[j, i, 0:100], width=np.diff(binvals[0:100]), align='edge', edgecolor='red', alpha=0.7)
+            axs[j].bar(binvals[0:100-1], histograms_min[j, i, 0:100], width=np.diff(binvals[0:100]), align='edge', edgecolor='red', alpha=0.7)
             axs[j].set_ylim(0, 60)
             axs[j].set_ylabel('Counts', fontsize=12)
             axs[j].set_title(f'MCP Bias: {mcp_bias[j]}; Run: {runs_list[j]}', fontsize=12)
@@ -159,7 +159,7 @@ with PdfPages(f'{save_plot_path}/channel_plots_min_max.pdf') as pdf:
             col_max = 1  # Second column for max
 
             # Min histogram plot (red, left column)
-            axs[row, col_min].bar(binvals[0:100], histograms_min[j, i, 0:100], width=np.diff(binvals[0:100]), align='edge', edgecolor='red', alpha=0.7)
+            axs[row, col_min].bar(binvals[0:100-1], histograms_min[j, i, 0:100], width=np.diff(binvals[0:100]), align='edge', edgecolor='red', alpha=0.7)
             axs[row, col_min].set_ylim(0, 60)
             axs[row, col_min].set_ylabel('Counts', fontsize=12)
             axs[row, col_min].set_title(f'Min: MCP Bias {mcp_bias[j]} Run {runs_list[j]}', fontsize=10)
