@@ -121,7 +121,8 @@ np.save("binvals4.npy", binvals)
 np.save("channel_max_values_fex4.npy", channel_max_values)
 
 
-
+colors = plt.cm.get_cmap('tab10', len(channels)).colors
+line_styles = ['-', '--']
 # Cycle through line styles and colors
 line_style_cycle = itertools.cycle(line_styles)
 
