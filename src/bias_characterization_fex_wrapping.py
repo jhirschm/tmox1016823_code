@@ -5,7 +5,7 @@ import argparse
 import itertools
 from matplotlib.backends.backend_pdf import PdfPages
 
-event_num_break = 100
+event_num_break = 1000
 # Set up argument parser to take command-line arguments
 parser = argparse.ArgumentParser(description='Experiment.')
 parser.add_argument('--exp-name', type=str, help='Name of the experiment.')
