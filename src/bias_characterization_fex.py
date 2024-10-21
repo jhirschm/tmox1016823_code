@@ -35,12 +35,13 @@ bins_load_path = args.bins_load_path
 
 save = False
 
+mcp_bias = np.array([1200, 1250, 1300, 1350, 1400, 1450, 1500, 1550, 1600, 1650, 1700, 1750, 1800])
 
 if bins_load_path is not None:
-    mcp_bias = np.load(bins_load_path)
+    binvals = np.load(bins_load_path)
 else:
-    mcp_bias = np.array([1200, 1250, 1300, 1350, 1400, 1450, 1500, 1550, 1600, 1650, 1700, 1750, 1800])
-
+# Create a 3D array for histograms: (number of runs, number of channels, number of bins)
+    binvals = np.arange(0,(1<<15)+1,1<<6)
 
 
 
@@ -90,9 +91,7 @@ runs_list = [17, 16, 15, 14 ,5,6,7,8,9, 10,11, 12,13]
 #                     print("Value out of range for histogram bins.")
 
 
-# Create a 3D array for histograms: (number of runs, number of channels, number of bins)
-binvals = np.arange(0,(1<<15)+1,1<<5)
-binvals = np.arange(0,(1<<15)+1,1<<6)
+
 
 num_runs = len(runs_list)
 num_channels = len(channels)
