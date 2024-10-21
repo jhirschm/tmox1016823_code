@@ -114,11 +114,43 @@ for i, run_num in enumerate(runs_list):
                     if max_value > channel_max_values[i,j]:
                         channel_max_values[i,j] = max_value
 
-        if num >= 100:
+        if num >= 1000:
             break
-np.save("histograms3.npy", histograms)
-np.save("binvals3.npy", binvals)
-np.save("channel_max_values_fex3.npy", channel_max_values)
+np.save("histograms4.npy", histograms)
+np.save("binvals4.npy", binvals)
+np.save("channel_max_values_fex4.npy", channel_max_values)
+
+
+
+# Cycle through line styles and colors
+line_style_cycle = itertools.cycle(line_styles)
+
+# Plot each channel's max values with different colors and alternating line styles
+for j, chan in enumerate(channels):
+    color = colors[j % len(colors)]  # Cycle through the colors
+    line_style = next(line_style_cycle)  # Alternate between solid and dashed lines
+    plt.plot(mcp_bias, channel_max_values[:, j], label=f'Channel {chan}', color=color, linestyle=line_style)
+
+# Set plot labels and title
+plt.xlabel('MCP Bias (Voltage)', fontsize=12)
+plt.ylabel('Max Value', fontsize=12)
+plt.title('Max Waveform Values Across Runs for Each Channel', fontsize=14)
+
+# Add a legend to differentiate the channels
+plt.legend(loc='best', fontsize=10)
+
+# Show the grid
+plt.grid(True)
+
+if save_plot_path is not None:
+    # Save the plot
+    plt.savefig(save_plot_path)
+    print(f"Plot saved to {save_plot_path}")
+
+# Display the plot
+plt.show()
+
+
 # At this point, `histograms` contains the 3D histogram counts
 # You can access them like this:
 for run_idx in range(num_runs):
