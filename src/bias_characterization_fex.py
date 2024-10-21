@@ -98,7 +98,7 @@ for i, run_num in enumerate(runs_list):
         for j, chan in enumerate(channels):
             
                             
-            
+            print(j)
             for k in range(len(peaks[chan][0][1])):
                 if len(peaks[chan][0][1]) > 2:
                     max_value = peaks[chan][0][1][k].max()  # Get the maximum value for the peak
