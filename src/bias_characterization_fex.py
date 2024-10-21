@@ -10,6 +10,8 @@ import tkinter as tk
 from tkinter import ttk
 
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_pdf import PdfPages
+
 
 # Set up argument parser to take show_fourier as a command-line argument
 parser = argparse.ArgumentParser(description='Experiment.')
@@ -231,32 +233,35 @@ plt.show()
 # for run_idx in range(num_runs):
 #     for chan_idx in range(num_channels):
 #         print(f"Run {runs_list[run_idx]}, Channel {channels[chan_idx]} Histogram Counts: {histograms[run_idx, chan_idx]}")
+# Create a PDF file to save the plots
+with PdfPages('channel_plots.pdf') as pdf:
+    for i, chan in enumerate(channels):
+        fig, axs = plt.subplots(nrows=len(mcp_bias), ncols=1, figsize=(10, 18), sharex=True)
 
-for i, chan in enumerate(channels):
-    fig, axs = plt.subplots(nrows=len(mcp_bias), ncols=1, figsize=(10, 18), sharex=True)
+        for j in range(len(mcp_bias)):
+            # Plot each histogram with legends
+            axs[j].bar(binvals[300:-1], histograms[j, i, 300:], width=np.diff(binvals[300:]), align='edge', edgecolor='black', alpha=0.7)
 
-    for j in range(len(mcp_bias)):
-        # Plot each histogram with legends
-        axs[j].bar(binvals[300:-1], histograms[j, i, 300:], width=np.diff(binvals[300:]), align='edge', edgecolor='black', alpha=0.7)
+            # Set y-axis limits
+            axs[j].set_ylim(0, 60)
 
-        # Set y-axis limits
-        axs[j].set_ylim(0, 60)
+            # Add title for each subplot with the MCP Bias value
+            axs[j].set_title(f'MCP Bias: {mcp_bias[j]}', fontsize=12)
 
-        # Add title for each subplot with the MCP Bias value
-        axs[j].set_title(f'MCP Bias: {mcp_bias[j]}', fontsize=12)
+        # Set the main title for the entire plot based on channel number
+        fig.suptitle(f'Channel {chan} - FEX Max Pulse Height per Window', fontsize=16)
 
-    # Set the main title for the entire plot based on channel number
-    fig.suptitle(f'Channel {chan} - FEX Max Pulse Height per Window', fontsize=16)
+        # Set the x-label and y-label for the last subplot
+        axs[-1].set_xlabel('FEX Max Pulse Height per Window', fontsize=12)
+        axs[0].set_ylabel('Counts', fontsize=12)
 
-    # Set the x-label and y-label for the last subplot
-    axs[-1].set_xlabel('FEX Max Pulse Height per Window', fontsize=12)
-    axs[0].set_ylabel('Counts', fontsize=12)
+        # Adjust layout for better spacing with your specific settings
+        plt.subplots_adjust(top=0.92, bottom=0.05, left=0.125, right=0.9, hspace=0.7, wspace=0.6)
 
-    # Adjust layout for better spacing with your specific settings
-    plt.subplots_adjust(top=0.92, bottom=0.05, left=0.125, right=0.9, hspace=0.7, wspace=0.6)
+        # Save the current figure to the PDF
+        pdf.savefig(fig)
+        plt.close(fig)  # Close the figure to avoid displaying it
 
-    # Show the plot
-    plt.show()
 
 # fig, axs = plt.subplots(nrows=len(mcp_bias), ncols=2, figsize=(10, 18), sharex=True)
 # for (j,chan) in enumerate(channels):
