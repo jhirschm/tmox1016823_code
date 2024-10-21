@@ -98,21 +98,21 @@ for i, run_num in enumerate(runs_list):
         for j, chan in enumerate(channels):
             
                             
-            print(j)
-            for k in range(len(peaks[chan][0][1])):
-                if len(peaks[chan][0][1]) > 2:
-                    max_value = peaks[chan][0][1][k].max()  # Get the maximum value for the peak
-                    
-                    # Find the appropriate bin index for the single value
-                    bin_index = np.digitize(max_value, binvals) - 1  # Subtract 1 to convert to zero-based index
+            if peaks is not None:
+                for k in range(len(peaks[chan][0][1])):
+                    if len(peaks[chan][0][1]) > 2:
+                        max_value = peaks[chan][0][1][k].max()  # Get the maximum value for the peak
+                        
+                        # Find the appropriate bin index for the single value
+                        bin_index = np.digitize(max_value, binvals) - 1  # Subtract 1 to convert to zero-based index
 
-                    # Ensure the bin index is within the valid range
-                    if 0 <= bin_index < len(histograms[i, j]):
-                        histograms[i, j, bin_index] += 1  # Increment the count in the appropriate bin
-                    else:
-                        print(f"Value out of range for histogram bins for run {run_num}, channel {chan}: {max_value}")
-                    if max_value > channel_max_values[i,j]:
-                        channel_max_values[i,j] = max_value
+                        # Ensure the bin index is within the valid range
+                        if 0 <= bin_index < len(histograms[i, j]):
+                            histograms[i, j, bin_index] += 1  # Increment the count in the appropriate bin
+                        else:
+                            print(f"Value out of range for histogram bins for run {run_num}, channel {chan}: {max_value}")
+                        if max_value > channel_max_values[i,j]:
+                            channel_max_values[i,j] = max_value
 
         if num >= 1000:
             break
