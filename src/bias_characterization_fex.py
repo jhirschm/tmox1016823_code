@@ -114,11 +114,11 @@ for i, run_num in enumerate(runs_list):
                         if max_value > channel_max_values[i,j]:
                             channel_max_values[i,j] = max_value
 
-        if num >= 1000:
+        if num >= 10000:
             break
-np.save("histograms4.npy", histograms)
-np.save("binvals4.npy", binvals)
-np.save("channel_max_values_fex4.npy", channel_max_values)
+np.save("histograms5.npy", histograms)
+np.save("binvals5.npy", binvals)
+np.save("channel_max_values_fex5.npy", channel_max_values)
 
 
 colors = plt.cm.get_cmap('tab10', len(channels)).colors
@@ -151,6 +151,57 @@ if save_plot_path is not None:
 # Display the plot
 plt.show()
 
+plt.figure(figsize=(10, 6))
+line_style_cycle = itertools.cycle(line_styles)
+
+for j, chan in enumerate(channels):
+    color = colors[j % len(colors)]
+    line_style = next(line_style_cycle)
+    plt.plot(mcp_bias, channel_max_values[:, j], label=f'Channel {chan}', color=color, linestyle=line_style)
+
+# Set plot labels and title
+plt.xlabel('MCP Bias (Voltage)', fontsize=12)
+plt.ylabel('Max Value', fontsize=12)
+plt.title('Max Waveform Values Across Runs for Each Channel', fontsize=14)
+
+# Add a legend
+plt.legend(loc='best', fontsize=10)
+plt.grid(True)
+
+# Specify a target value for interpolation
+target_value = 26000  # Example target value
+target_bias = []
+
+for j in range(len(channels)):
+    # Interpolate the bias voltage corresponding to the target value for each channel
+    bias = np.interp(target_value, channel_max_values[:, j], mcp_bias)
+    target_bias.append(bias)
+
+    # Plot a black dot at the interpolated bias value and the target value
+    plt.scatter(bias, target_value, color='black', zorder=5)
+
+    
+    # # Add the text of the bias value near the black dot (to the right and slightly above)
+    # plt.text(bias + 10, target_value + 50 - (j * 100), f'Ch {chan}: Bias={bias:.2f}', 
+    #          fontsize=9, color='black', verticalalignment='center')
+
+print(target_bias)
+    
+plt.axhline(y=target_value, color='red', linestyle='--', linewidth=2, label=f'Max Value Target: {target_value}')
+
+# Adjust the layout to create space for the text on the side
+plt.subplots_adjust(right=0.75)  # Leave space on the right side of the plot for text box
+
+# Create the text box to the right of the plot
+bias_text = "\n".join([f"Ch {chan}: Bias={bias:.2f}" for chan, bias in zip(channels, target_bias)])
+
+# Add the text box to the right side using figtext
+plt.figtext(0.78, 0.5, bias_text, fontsize=10, ha='left', va='center', bbox=dict(facecolor='white', edgecolor='black'))
+
+# Show the plot
+plt.savefig("channel_max_values_plot_biasLine_labeled_thresh5.png")
+print("channel_max_values_plot_biasLine_thresh5.png")
+plt.show()
 
 # At this point, `histograms` contains the 3D histogram counts
 # You can access them like this:
