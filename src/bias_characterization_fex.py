@@ -28,7 +28,6 @@ args = parser.parse_args()
 
 # Access the experiment name
 exp_name = args.exp_name
-load_path = args.load_path
 save_plot_path = args.save_plot_path
 max_load_path = args.max_load_path
 hist_load_path = args.hist_load_path
