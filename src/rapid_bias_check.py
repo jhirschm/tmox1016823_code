@@ -165,8 +165,8 @@ with PdfPages(f'{save_folder_path}/experiment_plots.pdf') as pdf:
         fig, axs = plt.subplots(num_rows, 2, figsize=(10, num_rows * 3))
         fig.suptitle(f'Run {runs[0]}', fontsize=16)
         
-        max_value = np.max(histograms[0,:, 300:])  # Get the maximum value for setting the y-axis limits
-        max_secondary_value = np.max(secondary_histograms[0,:, 0:100])  # Get the maximum value for secondary histograms
+        max_value =  10#np.max(histograms[0,:, 300:])  # Get the maximum value for setting the y-axis limits
+        max_secondary_value = 10#np.max(secondary_histograms[0,:, 0:100])  # Get the maximum value for secondary histograms
         for j, chan in enumerate(channels):
             row = j // 2
             
