@@ -162,10 +162,12 @@ with PdfPages(f'{save_folder_path}/experiment_plots.pdf') as pdf:
     
     if num_runs == 1:
         # Single run case: All channels on the same page
-        fig, axs = plt.subplots(num_rows, 2, figsize=(10, num_rows * 3))
+        # fig, axs = plt.subplots(num_rows, 2, figsize=(10, num_rows * 3))
+        fig, axs = plt.subplots(nrows=num_rows, ncols=1, figsize=(10, 18), sharex=True)
+
         fig.suptitle(f'Run {runs[0]}', fontsize=16)
         
-        max_value =  10#np.max(histograms[0,:, 300:])  # Get the maximum value for setting the y-axis limits
+        max_value =  60#np.max(histograms[0,:, 300:])  # Get the maximum value for setting the y-axis limits
         max_secondary_value = 10#np.max(secondary_histograms[0,:, 0:100])  # Get the maximum value for secondary histograms
         for j, chan in enumerate(channels):
             row = j // 2
@@ -187,22 +189,29 @@ with PdfPages(f'{save_folder_path}/experiment_plots.pdf') as pdf:
     else:
         # Multiple runs case: One channel per page, all runs on the same page for that channel
         for j, chan in enumerate(channels):
-            fig, axs = plt.subplots(num_runs, 2, figsize=(10, num_runs * 3))
+            # fig, axs = plt.subplots(num_runs, 2, figsize=(10, num_runs * 3))
+            fig, axs = plt.subplots(nrows=num_rows, ncols=1, figsize=(10, 18), sharex=True)
+
             fig.suptitle(f'Channel {chan}', fontsize=16)
 
-            max_value = np.max(histograms[:,:, 300:])  # Get the maximum value for setting the y-axis limits
+            max_value = 60#np.max(histograms[:,:, 300:])  # Get the maximum value for setting the y-axis limits
             max_secondary_value = np.max(secondary_histograms[:,:, 0:100])  # Get the maximum value for secondary histograms
             for i, run_num in enumerate(runs):
                 # Plot secondary histograms for this run on the left column
-                axs[i, 0].bar(binvals[0:100], secondary_histograms[i, j, 0:100], width=np.diff(binvals[0:100+1]), edgecolor="black")
-                axs[i, 0].set_title(f'Run {run_num} (Secondary)', fontsize=12)
-                axs[i, 0].set_ylim(0, max_secondary_value * 1.1)  # Set ylim to max value with a 10% margin
+                # axs[i, 0].bar(binvals[0:100], secondary_histograms[i, j, 0:100], width=np.diff(binvals[0:100+1]), edgecolor="black")
+                # axs[i, 0].set_title(f'Run {run_num} (Secondary)', fontsize=12)
+                # axs[i, 0].set_ylim(0, max_secondary_value * 1.1)  # Set ylim to max value with a 10% margin
 
                 # Plot primary histograms for this run on the right column
-                axs[i, 1].bar(binvals[300:-1], histograms[i, j, 300:], width=np.diff(binvals[300:]), edgecolor="black")
-                axs[i, 1].set_title(f'Run {run_num} (Primary)', fontsize=12)
-                axs[i, 1].set_ylim(0, max_value * 1.1)  # Set ylim to max value with a 10% margin
-
+                axs[i, 0].bar(binvals[300:-1], histograms[i, j, 300:], width=np.diff(binvals[300:]), edgecolor="black")
+                axs[i, 0].set_title(f'Run {run_num} (Primary)', fontsize=12)
+                axs[i, 0].set_ylim(0, max_value * 1.1)  # Set ylim to max value with a 10% margin
+                axs[i].set_ylabel('Counts', fontsize=12)
+            # Set the x-label and y-label for the last subplot
+            axs[-1].set_xlabel('FEX Max Pulse Height per Window', fontsize=12)
+        
+            # Adjust layout for better spacing with your specific settings
+            plt.subplots_adjust(top=0.92, bottom=0.05, left=0.125, right=0.9, hspace=0.7, wspace=0.6)
             plt.tight_layout(rect=[0, 0, 1, 0.96])
             pdf.savefig(fig)  # Save the current figure to the PDF
             plt.close(fig)  # Close the figure to free memory
