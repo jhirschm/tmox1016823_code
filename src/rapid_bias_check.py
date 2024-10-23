@@ -164,19 +164,21 @@ with PdfPages(f'{save_folder_path}/experiment_plots.pdf') as pdf:
         # Single run case: All channels on the same page
         fig, axs = plt.subplots(num_rows, 2, figsize=(10, num_rows * 3))
         fig.suptitle(f'Run {runs[0]}', fontsize=16)
-
+        
+        max_value = np.max(histograms[0,:, 300:])  # Get the maximum value for setting the y-axis limits
+        max_secondary_value = np.max(secondary_histograms[0,:, 0:100])  # Get the maximum value for secondary histograms
         for j, chan in enumerate(channels):
             row = j // 2
             
             # Plot secondary histograms on the left column
-            axs[j, 0].bar(binvals[:-1], secondary_histograms[0, j], width=np.diff(binvals), edgecolor="black")
+            axs[j, 0].bar(binvals[0:100], secondary_histograms[0, j, 0:100+1], width=np.diff(binvals[0:100+1]), edgecolor="black")
             axs[j, 0].set_title(f'Channel {chan} (Secondary)', fontsize=12)
-            axs[j, 0].set_ylim(0, np.max(secondary_histograms[0, j]) * 1.1)  # Set ylim to max value with a 10% margin
+            axs[j, 0].set_ylim(0, max_value * 1.1)  # Set ylim to max value with a 10% margin
 
             # Plot primary histograms on the right column
-            axs[j, 1].bar(binvals[:-1], histograms[0, j], width=np.diff(binvals), edgecolor="black")
+            axs[j, 1].bar(binvals[300:-1], histograms[0, j,  300:], width=np.diff(binvals[300:]), edgecolor="black")
             axs[j, 1].set_title(f'Channel {chan} (Primary)', fontsize=12)
-            axs[j, 1].set_ylim(0, np.max(histograms[0, j]) * 1.1)  # Set ylim to max value with a 10% margin
+            axs[j, 1].set_ylim(0, max_secondary_value * 1.1)  # Set ylim to max value with a 10% margin
 
         plt.tight_layout(rect=[0, 0, 1, 0.96])
         pdf.savefig(fig)  # Save the current figure to the PDF
@@ -188,16 +190,18 @@ with PdfPages(f'{save_folder_path}/experiment_plots.pdf') as pdf:
             fig, axs = plt.subplots(num_runs, 2, figsize=(10, num_runs * 3))
             fig.suptitle(f'Channel {chan}', fontsize=16)
 
+            max_value = np.max(histograms[:,:, 300:])  # Get the maximum value for setting the y-axis limits
+            max_secondary_value = np.max(secondary_histograms[:,:, 0:100])  # Get the maximum value for secondary histograms
             for i, run_num in enumerate(runs):
                 # Plot secondary histograms for this run on the left column
-                axs[i, 0].bar(binvals[:-1], secondary_histograms[i, j], width=np.diff(binvals), edgecolor="black")
+                axs[i, 0].bar(binvals[0:100], secondary_histograms[i, j, 0:100+1], width=np.diff(binvals[0:100+1]), edgecolor="black")
                 axs[i, 0].set_title(f'Run {run_num} (Secondary)', fontsize=12)
-                axs[i, 0].set_ylim(0, np.max(secondary_histograms[i, j]) * 1.1)  # Set ylim to max value with a 10% margin
+                axs[i, 0].set_ylim(0, max_secondary_value * 1.1)  # Set ylim to max value with a 10% margin
 
                 # Plot primary histograms for this run on the right column
-                axs[i, 1].bar(binvals[:-1], histograms[i, j], width=np.diff(binvals), edgecolor="black")
+                axs[i, 1].bar(binvals[300:-1], histograms[i, j, 300:], width=np.diff(binvals[300:]), edgecolor="black")
                 axs[i, 1].set_title(f'Run {run_num} (Primary)', fontsize=12)
-                axs[i, 1].set_ylim(0, np.max(histograms[i, j]) * 1.1)  # Set ylim to max value with a 10% margin
+                axs[i, 1].set_ylim(0, max_value * 1.1)  # Set ylim to max value with a 10% margin
 
             plt.tight_layout(rect=[0, 0, 1, 0.96])
             pdf.savefig(fig)  # Save the current figure to the PDF
