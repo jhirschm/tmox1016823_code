@@ -5,6 +5,8 @@ import argparse
 import itertools
 from matplotlib.backends.backend_pdf import PdfPages
 import os
+from datetime import datetime
+
 
 event_num_break = 10000
 # Set up argument parser to take command-line arguments
