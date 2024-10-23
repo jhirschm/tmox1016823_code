@@ -171,7 +171,7 @@ with PdfPages(f'{save_folder_path}/experiment_plots.pdf') as pdf:
             row = j // 2
             
             # Plot secondary histograms on the left column
-            axs[j, 0].bar(binvals[0:100], secondary_histograms[0, j, 0:100+1], width=np.diff(binvals[0:100+1]), edgecolor="black")
+            axs[j, 0].bar(binvals[0:100], secondary_histograms[0, j, 0:100], width=np.diff(binvals[0:100+1]), edgecolor="black")
             axs[j, 0].set_title(f'Channel {chan} (Secondary)', fontsize=12)
             axs[j, 0].set_ylim(0, max_value * 1.1)  # Set ylim to max value with a 10% margin
 
@@ -194,7 +194,7 @@ with PdfPages(f'{save_folder_path}/experiment_plots.pdf') as pdf:
             max_secondary_value = np.max(secondary_histograms[:,:, 0:100])  # Get the maximum value for secondary histograms
             for i, run_num in enumerate(runs):
                 # Plot secondary histograms for this run on the left column
-                axs[i, 0].bar(binvals[0:100], secondary_histograms[i, j, 0:100+1], width=np.diff(binvals[0:100+1]), edgecolor="black")
+                axs[i, 0].bar(binvals[0:100], secondary_histograms[i, j, 0:100], width=np.diff(binvals[0:100+1]), edgecolor="black")
                 axs[i, 0].set_title(f'Run {run_num} (Secondary)', fontsize=12)
                 axs[i, 0].set_ylim(0, max_secondary_value * 1.1)  # Set ylim to max value with a 10% margin
 
