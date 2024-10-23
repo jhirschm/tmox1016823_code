@@ -88,6 +88,7 @@ else:
 
 # Check if 
 
+print(runs)
 if hist_load_path is None:
     for i, run_num in enumerate(runs):
         ds = psana.DataSource(exp=exp_name, run=run_num)
