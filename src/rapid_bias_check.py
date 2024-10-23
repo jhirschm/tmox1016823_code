@@ -18,7 +18,7 @@ parser.add_argument('--bins-load-path', type=str, default=None, help='Path to lo
 parser.add_argument('--save-folder-path', type=str, default=None, help='Path to save the plots.')
 
 # Add argument for either a single run or a list of runs
-parser.add_argument('--run', type=str, nargs='+', help='Single run or a list of runs.')
+parser.add_argument('--run', type=int, nargs='+', help='Single run or a list of runs.')
 
 # Add argument for maximum number of events
 parser.add_argument('--max-events', type=int, help='Maximum number of events to process.')
