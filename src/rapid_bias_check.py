@@ -208,17 +208,20 @@ with PdfPages(f'{save_folder_path}/experiment_plots.pdf') as pdf:
             for i, run_num in enumerate(runs):
                 # Plot primary histograms for this run on the right column
                 axs[i, 0].bar(binvals[0:pos_threshold_bin_index], secondary_histograms[i, j,0:pos_threshold_bin_index], width=np.diff(binvals[0:pos_threshold_bin_index+1]), edgecolor="red", facecolor="red")
-                if args.mcp_bias is not None:
-                    axs[i, 0].set_title(f'Run {run_num} (Roll Over) MCP Bias: {args.mcp_bias[i]}', fontsize=12)
-                else:
-                    axs[i, 0].set_title(f'Run {run_num} (Roll Over)', fontsize=12)
                 axs[i, 0].set_ylim(0, max_value_1*1.1)  # Set ylim to max value with a 10% margin
                 axs[i, 0].set_ylabel('Counts', fontsize=12)
                 
                 # Plot primary histograms for this run on the right column
                 axs[i, 1].bar(binvals[250:-1], histograms[i, j,250:], width=np.diff(binvals[250:]), edgecolor="black", facecolor="black")
-                axs[i, 1].set_title(f'Run {run_num} (Primary)', fontsize=12)
                 axs[i, 1].set_ylim(0, max_value_2 * 1.1)  # Set ylim to max value with a 10% margin
+
+                if args.mcp_bias is not None:
+                    axs[i, 0].set_title(f'Run {run_num} (Roll Over) MCP Bias: {args.mcp_bias[i]}', fontsize=12)
+                    axs[i, 1].set_title(f'Run {run_num} Primary) MCP Bias: {args.mcp_bias[i]}', fontsize=12)
+                else:
+                    axs[i, 0].set_title(f'Run {run_num} (Roll Over)', fontsize=12)
+                    axs[i, 1].set_title(f'Run {run_num} (Primary)', fontsize=12)
+
             # Set the x-label and y-label for the last subplot
             axs[-1, 0].set_xlabel(f'FEX Max Pulse Height <{pos_threshold_bin_index} per Window', fontsize=12)
             axs[-1, 1].set_xlabel('FEX Max Pulse Height per Window', fontsize=12)
